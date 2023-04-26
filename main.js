@@ -1,18 +1,22 @@
-function collectDates() {
-	var dates = [];
-	for (var i = 0; i < 10; i++) {
-		dates.push(new Date());
-	}
-	console.log(dates);
-	return dates;
-}
+var tabId;
+chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+	var tab = tabs[0];
+	console.log(tab.id);
+	tabId = tab.id;
+});
 
 window.onload = function () {
-	// This code will run when the page/DOM is ready to query
+	// This code will run when the popup DOM is ready to query
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	console.log("found btn:" + scrapeBtn);
 	scrapeBtn.addEventListener("click", async () => {
 		console.log("clicked");
-		const dates = await collectDates();
+		chrome.scripting
+			.executeScript({
+				target: { tabId: tabId },
+				files: ["scraping.js"],
+			})
+			.then(() => console.log("script injected"));
 	});
 }; //end window.onload
+
