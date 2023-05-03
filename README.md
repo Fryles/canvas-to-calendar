@@ -10,7 +10,7 @@
 <h4 align="center">A Chrome extension to consolidate and customize your academic calendar.</h4>
 
 <p align="center">
-  [![GitHub issues by-label](https://img.shields.io/github/issues/badges/shields/good%20first%20issue)](https://github.com/badges/shields/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+  
 </p>
 
 <p align="center">
