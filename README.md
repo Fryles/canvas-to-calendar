@@ -12,6 +12,7 @@
 <p align="center">
   ![Extension Rating](https://img.shields.io/chrome-web-store/rating/ikabnodlfakajogmdoojofebcejmjlll)
   ![Extension Users](https://img.shields.io/chrome-web-store/users/ikabnodlfakajogmdoojofebcejmjlll)
+  ![rating](https://img.shields.io/badge/rating-★★★★☆-brightgreen)
 </p>
 
 <p align="center">
