@@ -10,8 +10,8 @@
 <h4 align="center">A Chrome extension to consolidate and customize your academic calendar.</h4>
 
 <p align="center">
-  [Chrome Web Store](https://img.shields.io/chrome-web-store/rating/ikabnodlfakajogmdoojofebcejmjlll)
-  [Chrome Web Store](https://img.shields.io/chrome-web-store/users/ikabnodlfakajogmdoojofebcejmjlll)
+  ![Extension Rating](https://img.shields.io/chrome-web-store/rating/ikabnodlfakajogmdoojofebcejmjlll)
+  ![Extension Users](https://img.shields.io/chrome-web-store/users/ikabnodlfakajogmdoojofebcejmjlll)
 </p>
 
 <p align="center">
