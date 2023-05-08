@@ -1,5 +1,5 @@
 var courses = []; //array of courses and their respective assignments
-var toke = "io3O8DycTcNREx1ZxOyJ8T5vGWcgovOcKjODjpA9PW1R4qyABIjMtwjGNoPqytro";
+var token = "";
 // Get the current active tab ID
 
 /*
@@ -27,6 +27,7 @@ window.onload = function () {
 	// This code will run when the popup DOM is ready to query
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	// Add an event listener for the button
+	//TODO: Get token from user input/stored token
 	scrapeBtn.addEventListener("click", async () => {
 		console.log(courses);
 	}); // end scrapeBtn.addEventListener
