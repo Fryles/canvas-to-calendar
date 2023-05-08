@@ -42,7 +42,7 @@ function getAssignments() {
 			headers: {
 				//headers for authorization (token)
 				Accept: "application/json",
-				Authorization: "Bearer " + toke,
+				Authorization: "Bearer " + token,
 			},
 		}
 	)
@@ -64,7 +64,7 @@ function getAssignments() {
 					headers: {
 						//headers for authorization (token)
 						Accept: "application/json",
-						Authorization: "Bearer " + toke,
+						Authorization: "Bearer " + token,
 					},
 				})
 					.then((response) => response.json())
