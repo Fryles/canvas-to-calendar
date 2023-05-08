@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Canvas To Calendar",
-	"description": "blah blah",
+	"description": "Inject dates and assignments from your canvas classes into your google calendar",
 	"version": "1",
 	"action": {
 		"default_popup": "hello.html",
@@ -9,7 +9,7 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["https://canvas.ucsc.edu/*"],
+			"matches": ["*://canvas.ucsc.edu/*"],
 			"js": ["scraping.js"]
 		}
 	],
