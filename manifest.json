@@ -14,5 +14,5 @@
 		}
 	],
 	"permissions": ["tabs", "scripting"],
-	"host_permissions": ["*://canvas.*.*/*"]
+	"host_permissions": ["https://canvas.ucsc.edu/*"]
 }
