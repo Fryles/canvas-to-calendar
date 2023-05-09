@@ -12,12 +12,12 @@ h1 {
 }
 #aboutBtn {
 	position: absolute;
-	top: 125px;
+	top: 50px;
 	right: 10;
 }
 #helpBtn {
 	position: absolute;
-	top: 200px;
+	top: 125px;
 	right: 10;
 }
 /* color for placeholder of api input key box */
