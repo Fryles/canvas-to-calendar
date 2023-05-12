@@ -101,7 +101,7 @@ function loadToken() {
 	chrome.storage.sync.get("token", function (obj) {
 		console.log("loaded: " + obj.token);
 		token = obj.token;
-		if (token != "") {
+		if (token != "" && token != null && token != undefined) {
 			document.querySelector("#floatingInput").placeholder = token;
 		}
 	});
