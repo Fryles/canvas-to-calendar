@@ -1,6 +1,5 @@
 var courses = []; //array of courses and their respective assignments
 var token = "";
-// Get the current active tab ID
 
 /*
 SCRAPPED CODE FOR INJECTING SCRIPT INTO CURRENT TAB
@@ -22,18 +21,27 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 				.then(() => console.log("script injected"));
 */
 
-getAssignments();
 window.onload = function () {
 	// This code will run when the popup DOM is ready to query
+	loadToken();
 	const scrapeBtn = document.querySelector("#scrapeBtn");
-	// Add an event listener for the button
-	//TODO: Get token from user input/stored token
 	scrapeBtn.addEventListener("click", async () => {
+		loadAssignments();
 		console.log(courses);
-	}); // end scrapeBtn.addEventListener
+	});
+
+	const tokenInput = document.querySelector("#floatingInput");
+	tokenInput.addEventListener("keyup", (e) => {
+		// listen to a keyup event on the input field
+		if (e.keyCode == 13) {
+			// if user presses enter
+			token = tokenInput.value;
+			storeToken(token);
+		}
+	});
 }; //end window.onload
 
-function getAssignments() {
+function loadAssignments() {
 	var base = "https://canvas.ucsc.edu/api/v1/"; //base url for canvas api
 	fetch(
 		//fetch all courses
@@ -48,6 +56,11 @@ function getAssignments() {
 	)
 		.then((response) => response.json())
 		.then((data) => {
+			if (data.errors.length > 0) {
+				// bad request
+				alert(data.errors[0].message);
+				return;
+			}
 			//Courses have been fetched and converted to JSON
 			for (let i = 0; i < data.length; i++) {
 				// filter all courses by concluded and is_favorite to get only active courses
@@ -55,7 +68,6 @@ function getAssignments() {
 					courses.push(data[i]);
 				}
 			}
-			console.log(courses);
 			//courses now contains all active courses
 			//now we need to get all assignments for each course
 			for (let i = 0; i < courses.length; i++) {
@@ -77,4 +89,20 @@ function getAssignments() {
 					});
 			}
 		});
+}
+
+function storeToken(token) {
+	chrome.storage.sync.set({ token: token }, function () {
+		console.log("saved token: ", token);
+	});
+}
+
+function loadToken() {
+	chrome.storage.sync.get("token", function (obj) {
+		console.log("loaded: " + obj.token);
+		token = obj.token;
+		if (token != "") {
+			document.querySelector("#floatingInput").placeholder = token;
+		}
+	});
 }

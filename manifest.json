@@ -7,12 +7,6 @@
 		"default_popup": "hello.html",
 		"default_icon": "C2Cupdated.png"
 	},
-	"content_scripts": [
-		{
-			"matches": ["*://canvas.ucsc.edu/*"],
-			"js": ["scraping.js"]
-		}
-	],
-	"permissions": ["tabs", "scripting"],
-	"host_permissions": ["https://canvas.ucsc.edu/*"]
+	"permissions": ["tabs", "scripting", "storage"],
+	"host_permissions": ["*://*/*"]
 }
