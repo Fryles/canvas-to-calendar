@@ -93,15 +93,24 @@ function loadAssignments() {
 			}
 			//courses now contains all active courses
 			//now we need to get all assignments and grades for each course
+
+			let courseGrades = []; //for tweaks script
 			for (let i = 0; i < courses.length; i++) {
 				courses[i].assignments = [];
 				//get grade for each course
 				for (let j = 0; j < enrollments.length; j++) {
 					if (enrollments[j].course_id == courses[i].id) {
 						courses[i].grade = enrollments[j].grades.current_score;
+						courseGrades.push({
+							course: courses[i].name,
+							courseId: courses[i].id,
+							courseCode: courses[i].course_code,
+							courseOgName: courses[i].original_name,
+							grade: enrollments[j].grades.current_score,
+							letterGrade: enrollments[j].grades.current_grade,
+						});
 					}
 				}
-
 				fetch(base + "courses/" + courses[i].id + "/assignments", {
 					headers: {
 						//headers for authorization (token)
@@ -118,6 +127,10 @@ function loadAssignments() {
 						}
 					});
 			}
+			//save courseGrades to storage for tweaks script
+			chrome.storage.sync.set({ courseGrades: courseGrades }, function () {
+				console.log("saved courseGrades: ", courseGrades);
+			});
 		});
 }
 

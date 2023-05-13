@@ -6,6 +6,8 @@ var options = {
 	showGrades: false,
 };
 loadSettings();
+var courseGrades;
+getCourseGrades();
 
 var overlay = document.createElement("div");
 overlay.id = "overlay";
@@ -57,7 +59,7 @@ showGradesBtn.id = "showGradesBtn";
 
 zenModeBtn.innerHTML = "Zen Mode";
 darkModeBtn.innerHTML = "Dark Mode";
-removeWatermarkBtn.innerHTML = "Remove Watermark";
+removeWatermarkBtn.innerHTML = "KILL SLUG";
 showGradesBtn.innerHTML = "Show Grades On Dash";
 
 zenModeBtn.addEventListener("click", () => {
@@ -77,6 +79,7 @@ removeWatermarkBtn.addEventListener("click", () => {
 });
 showGradesBtn.addEventListener("click", () => {
 	options.showGrades = !options.showGrades;
+	setGradesOnDash(options.showGrades);
 	storeSettings();
 });
 
@@ -122,11 +125,12 @@ function zenMode(on) {
 		document.getElementById("footer").style.display = on ? "none" : "block";
 	}
 	if (document.getElementsByClassName("ic-DashboardCard__action-badge")) {
-		document
-			.getElementsByClassName("ic-DashboardCard__action-badge")
-			.forEach((element) => {
-				element.style.display = on ? "none" : "block";
-			});
+		let badges = document.getElementsByClassName(
+			"ic-DashboardCard__action-badge"
+		);
+		for (let i = 0; i < badges.length; i++) {
+			badges[i].style.display = on ? "none" : "block";
+		}
 	}
 }
 
@@ -154,4 +158,62 @@ function darkMode(on) {
 			document.getElementById("darkModeStylesheet").remove();
 		}
 	}
+}
+
+function applySettings() {
+	watermark(options.removeWatermark);
+	zenMode(options.zenMode);
+	darkMode(options.darkMode);
+	setGradesOnDash(options.showGrades);
+}
+
+function setGradesOnDash(on) {
+	if (on) {
+		let courses = document.getElementsByClassName(
+			"ic-DashboardCard__header_content"
+		);
+		for (let i = 0; i < courses.length; i++) {
+			let course = courses[i];
+			let courseName = course.getElementsByClassName(
+				"ic-DashboardCard__header-title"
+			)[0].innerText;
+			let courseCode = course.getElementsByClassName(
+				"ic-DashboardCard__header-subtitle"
+			)[0].innerText;
+			for (let j = 0; j < courseGrades.length; j++) {
+				let courseGrade = courseGrades[j];
+				if (
+					(courseGrade.courseName == courseName ||
+						courseGrade.courseCode == courseCode) &&
+					courseGrade.grade != null
+				) {
+					let grade = courseGrade.grade + "%";
+					let gradeDiv = document.createElement("span");
+					gradeDiv.className =
+						"ic-DashboardCard__header-title c2cGrade ellipsis";
+					gradeDiv.style = "float: right; font-size: 1em;";
+					gradeDiv.innerText = grade;
+					course
+						.getElementsByClassName("ic-DashboardCard__header-title")[0]
+						.appendChild(gradeDiv);
+				}
+			}
+		}
+	} else {
+		let grades = document.getElementsByClassName("c2cGrade");
+		for (let i = 0; i < grades.length; i++) {
+			grades[i].remove();
+		}
+	}
+}
+
+function getCourseGrades() {
+	chrome.storage.sync.get("courseGrades", function (data) {
+		if (data.courseGrades != undefined) {
+			console.log("grades loaded: ", data.courseGrades);
+			courseGrades = data.courseGrades;
+		} else {
+			console.log("grades not found");
+		}
+	});
 }
