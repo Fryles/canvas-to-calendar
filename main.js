@@ -1,32 +1,29 @@
+// GLOBALS
 var courses = []; //array of courses and their respective assignments
+var enrollments = []; //array of enrollments (used to get grades)
 var token = "";
-
-/*
-SCRAPPED CODE FOR INJECTING SCRIPT INTO CURRENT TAB
-
 var tabId;
-// The ID of the extension we want to talk to.
+var canvasUserObj = {}; //object containing user info
 
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 	var tab = tabs[0];
-	console.log(tab.id);
 	tabId = tab.id;
 });
 
-	chrome.scripting
-				.executeScript({
-					target: { tabId: tabId },
-					files: ["scraping.js"],
-				})
-				.then(() => console.log("script injected"));
-*/
-
+// EVENT LISTENERS/INITIALIZATION
 window.onload = function () {
 	// This code will run when the popup DOM is ready to query
 	loadToken();
+
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	scrapeBtn.addEventListener("click", async () => {
 		loadAssignments();
+		console.log(courses);
+	});
+
+	const selectAsgnmsBtn = document.querySelector("#asgnmBtn");
+	selectAsgnmsBtn.addEventListener("click", async () => {
+		//placeholder
 		console.log(courses);
 	});
 
@@ -37,15 +34,41 @@ window.onload = function () {
 			// if user presses enter
 			token = tokenInput.value;
 			storeToken(token);
+			getUser();
 		}
+	});
+
+	const tweakBtn = document.querySelector("#tweaksBtn");
+	tweakBtn.addEventListener("click", async () => {
+		chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			files: ["./tweaks.js"],
+		});
 	});
 }; //end window.onload
 
+// FUNCTIONS
+function getUser() {
+	return fetch("https://canvas.ucsc.edu/api/v1/users/self", {
+		headers: {
+			//headers for authorization (token)
+			Accept: "application/json",
+			Authorization: "Bearer " + token,
+		},
+	})
+		.then((response) => response.json())
+		.then((data) => {
+			canvasUserObj = data;
+			loadEnrollments();
+			return data;
+		});
+}
+
 function loadAssignments() {
+	courses = []; //reset courses
 	var base = "https://canvas.ucsc.edu/api/v1/"; //base url for canvas api
 	fetch(
-		//fetch all courses
-		base + "courses" + "?per_page=100&include[]=concluded&include[]=favorites",
+		base + "courses" + "?per_page=100&include[]=concluded&include[]=favorites", //fetch all courses
 		{
 			headers: {
 				//headers for authorization (token)
@@ -56,7 +79,7 @@ function loadAssignments() {
 	)
 		.then((response) => response.json())
 		.then((data) => {
-			if (data.errors.length > 0) {
+			if (data.errors && data.errors.length > 0) {
 				// bad request
 				alert(data.errors[0].message);
 				return;
@@ -69,9 +92,16 @@ function loadAssignments() {
 				}
 			}
 			//courses now contains all active courses
-			//now we need to get all assignments for each course
+			//now we need to get all assignments and grades for each course
 			for (let i = 0; i < courses.length; i++) {
 				courses[i].assignments = [];
+				//get grade for each course
+				for (let j = 0; j < enrollments.length; j++) {
+					if (enrollments[j].course_id == courses[i].id) {
+						courses[i].grade = enrollments[j].grades.current_score;
+					}
+				}
+
 				fetch(base + "courses/" + courses[i].id + "/assignments", {
 					headers: {
 						//headers for authorization (token)
@@ -91,6 +121,25 @@ function loadAssignments() {
 		});
 }
 
+function loadEnrollments() {
+	return fetch(
+		"https://canvas.ucsc.edu/api/v1/users/" + canvasUserObj.id + "/enrollments",
+		{
+			headers: {
+				//headers for authorization (token)
+				Accept: "application/json",
+				Authorization: "Bearer " + token,
+			},
+		}
+	)
+		.then((response) => response.json())
+		.then((data) => {
+			//enrollments have been fetched and converted to JSON
+			enrollments = data;
+			return enrollments;
+		});
+}
+
 function storeToken(token) {
 	chrome.storage.sync.set({ token: token }, function () {
 		console.log("saved token: ", token);
@@ -103,6 +152,7 @@ function loadToken() {
 		token = obj.token;
 		if (token != "" && token != null && token != undefined) {
 			document.querySelector("#floatingInput").placeholder = token;
+			getUser();
 		}
 	});
 }

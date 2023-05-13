@@ -7,6 +7,6 @@
 		"default_popup": "hello.html",
 		"default_icon": "C2Cupdated.png"
 	},
-	"permissions": ["tabs", "scripting", "storage"],
+	"permissions": ["tabs", "scripting", "storage", "activeTab"],
 	"host_permissions": ["*://*/*"]
 }
