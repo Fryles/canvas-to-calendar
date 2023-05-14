@@ -6,8 +6,7 @@ var options = {
 	showGrades: false,
 };
 loadSettings();
-var courseGrades;
-getCourseGrades();
+var courses = getCourses();
 
 var overlay = document.createElement("div");
 overlay.id = "overlay";
@@ -169,22 +168,22 @@ function applySettings() {
 
 function setGradesOnDash(on) {
 	if (on) {
-		let courses = document.getElementsByClassName(
+		let courseTitles = document.getElementsByClassName(
 			"ic-DashboardCard__header_content"
 		);
-		for (let i = 0; i < courses.length; i++) {
-			let course = courses[i];
+		for (let i = 0; i < courseTitles.length; i++) {
+			let course = courseTitles[i];
 			let courseName = course.getElementsByClassName(
 				"ic-DashboardCard__header-title"
 			)[0].innerText;
 			let courseCode = course.getElementsByClassName(
 				"ic-DashboardCard__header-subtitle"
 			)[0].innerText;
-			for (let j = 0; j < courseGrades.length; j++) {
-				let courseGrade = courseGrades[j];
+			for (let j = 0; j < courses.length; j++) {
+				let courseGrade = courses[j];
 				if (
-					(courseGrade.courseName == courseName ||
-						courseGrade.courseCode == courseCode) &&
+					(courseGrade.name == courseName ||
+						courseGrade.course_code == courseCode) &&
 					courseGrade.grade != null
 				) {
 					let grade = courseGrade.grade + "%";
@@ -207,13 +206,6 @@ function setGradesOnDash(on) {
 	}
 }
 
-function getCourseGrades() {
-	chrome.storage.sync.get("courseGrades", function (data) {
-		if (data.courseGrades != undefined) {
-			console.log("grades loaded: ", data.courseGrades);
-			courseGrades = data.courseGrades;
-		} else {
-			console.log("grades not found");
-		}
-	});
+async function getCourses() {
+	return await chrome.storage.sync.get("courses").courses;
 }
