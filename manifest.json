@@ -7,6 +7,15 @@
 		"default_popup": "hello.html",
 		"default_icon": "C2Cupdated.png"
 	},
-	"permissions": ["tabs", "scripting", "storage", "activeTab"],
-	"host_permissions": ["*://*/*"]
+	"permissions": ["tabs", "scripting", "storage", "identity"],
+	"host_permissions": ["*://*/*"],
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+	},
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4ZNgYCi6GUyiCCqdLgdd/Yxer8s4X/A7J5gqlfmyknmUqFSpwVALgNqJV6BRmK1ZOnX9flzH/7In1aT9WIkiG6WsxxsrILPZL7b5p8qEfxjNjXAUWQHVhmqUnKdmifHv0SvFoSecQfVaSwajOvaoq8KZoDiKm5LUSGNMv618Dmbp+YL0qemHN884gmh5y1FIlNa1LdkLST9Uap8i56Z3Q8F44MYqQpNlEJ/i9FCDgqjI6U5jMRshuRwi0f22AWOd/SeptjfhKMHAX91S3c3smhcoSkZNF5LVCbTGELJZcfR5UAPF1a578KXAj3pI8lEhdOI4fCtKIIY3Os4ZCdE57wIDAQAB",
+	"oauth2": {
+		"client_id": "609099671280-trlqa1rlea2rn5q6gnrm7oilo2v1f8l3.apps.googleusercontent.com",
+		"scopes": ["https://www.googleapis.com/auth/calendar"]
+	}
 }
