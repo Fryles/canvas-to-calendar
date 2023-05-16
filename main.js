@@ -1,9 +1,6 @@
 var courses = []; //array of courses and their respective assignments
 var token = "";
 
-// Authorization token (OAuth2.0 token)
-var authToken = "";
-
 /*
 SCRAPPED CODE FOR INJECTING SCRIPT INTO CURRENT TAB
 
@@ -29,9 +26,7 @@ window.onload = function () {
 	loadToken();
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	scrapeBtn.addEventListener("click", async () => {
-		
-		getAuthorization();
-		var aEvent = {
+		var event = {
 			'summary': 'Google I/O 2015',
 			'location': '800 Howard St., San Francisco, CA 94103',
 			'description': 'A chance to hear more about Google\'s developer products.',
@@ -58,7 +53,7 @@ window.onload = function () {
 			  ]
 			}
 		  };
-		insertEvent(aEvent);
+		insertEvent(event);
 		/*loadAssignments();
 		console.log(courses);*/
 	});
@@ -140,13 +135,6 @@ function loadToken() {
 	});
 }
 
-// Ask for user's permission if it can modify it's Google Calendar and gets authToken if granted.
-function getAuthorization () {
-	chrome.identity.getAuthToken({ 'interactive' : true}, function(authToken) {
-		console.log(authToken)
-	});
-}
-
 // Still working on this.
 function createEvent (/*something*/) {
 	var event = {
@@ -179,22 +167,25 @@ function createEvent (/*something*/) {
 }
 
 // Takes an event and inserts it into Google Calendar.
-function insertEvent(aEvent) {		
-	// Initializes the API request.
-	let init = {
-		method: 'POST',
-		async: true,
-		headers: {
-			Authorization: 'Bearer ' + authToken,
-			'Content-Type': 'application/json'
-		},		
-		body: JSON.stringify(aEvent)
-	};
-		 
-	// Fetches the API request.
-	fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', init)
-	.then((response) => response.json()) // Transform the data into json
-	.then(function(data) {
-		console.log(data);
-	  })
+function insertEvent(aEvent) {	
+	// Ask for user's permission if it can modify it's Google Calendar and gets authToken if granted.	
+	chrome.identity.getAuthToken({ 'interactive' : true}, function(token) {
+		// Initializes the API request.
+		let init = {
+			method: 'POST',
+			async: true,
+			headers: {
+				Authorization: 'Bearer ' + token,
+				'Content-Type': 'application/json'
+			},		
+			body: JSON.stringify(aEvent)
+		};
+
+		// Fetches the API request.
+		fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', init)
+		.then((response) => response.json()) // Transform the data into json
+		.then(function(data) {
+			console.log(data);
+	  	})
+	});
 }
