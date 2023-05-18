@@ -39,6 +39,11 @@ window.onload = function () {
 			storeToken(token);
 		}
 	});
+
+	const helpBtn = document.querySelector('#helpBtn');
+	helpBtn.addEventListener('click', getHelp);
+	
+	
 }; //end window.onload
 
 function loadAssignments() {
@@ -105,4 +110,8 @@ function loadToken() {
 			document.querySelector("#floatingInput").placeholder = token;
 		}
 	});
+}
+
+function getHelp() {
+	chrome.tabs.create({ url: 'https://github.com/Fryles/canvas-to-calendar#readme' });
 }
