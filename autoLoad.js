@@ -173,7 +173,7 @@ chrome.runtime.onMessage.addListener(async function (
 	if (request.action === "loadSettings") {
 		let options = await loadSettings();
 		applySettings(options);
-		sendResponse({ response: options });
+		sendResponse({ response: "success" });
 	}
 });
 
