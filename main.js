@@ -40,10 +40,20 @@ window.onload = function () {
 		}
 	});
 
+	//redirect user to github repo 
+	const aboutBtn = document.querySelector('#aboutBtn');
+	aboutBtn.addEventListener('click', redirectAbout);
+	
 	const helpBtn = document.querySelector('#helpBtn');
-	helpBtn.addEventListener('click', getHelp);
-	
-	
+	const invisContainer = document.querySelector('#container');
+	helpBtn.addEventListener('click', function() {
+		if (container.style.display === "block") {
+			container.style.display = "none"
+		} else{
+			container.style.display =  "block";
+		}
+	})
+
 }; //end window.onload
 
 function loadAssignments() {
@@ -112,6 +122,8 @@ function loadToken() {
 	});
 }
 
-function getHelp() {
+//creates new chrome tab and redirects user to specified link
+function redirectAbout() {
 	chrome.tabs.create({ url: 'https://github.com/Fryles/canvas-to-calendar#readme' });
 }
+

@@ -68,3 +68,7 @@ button:hover,
 #floatingInput:hover {
 	box-shadow: #6485c4 0 0 0 4px;
 }
+
+.invisible {
+    display: none;
+}
