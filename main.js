@@ -37,6 +37,7 @@ window.onload = function () {
 		}
 	});
 
+
 	const tweakBtn = document.querySelector("#tweaksBtn");
 	tweakBtn.addEventListener("click", async () => {
 		chrome.scripting.executeScript({
@@ -44,6 +45,12 @@ window.onload = function () {
 			files: ["./tweaks.js"],
 		});
 	});
+
+	const helpBtn = document.querySelector('#helpBtn');
+	helpBtn.addEventListener('click', getHelp);
+	
+	
+
 }; //end window.onload
 
 // FUNCTIONS
@@ -80,4 +87,8 @@ async function loadToken() {
 	}
 	document.querySelector("#floatingInput").placeholder = t.token;
 	return t.token;
+}
+
+function getHelp() {
+	chrome.tabs.create({ url: 'https://github.com/Fryles/canvas-to-calendar#readme' });
 }
