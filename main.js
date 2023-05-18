@@ -44,15 +44,9 @@ window.onload = function () {
 	const aboutBtn = document.querySelector('#aboutBtn');
 	aboutBtn.addEventListener('click', redirectAbout);
 	
+	//hide container and show directions in place
 	const helpBtn = document.querySelector('#helpBtn');
-	const invisContainer = document.querySelector('#container');
-	helpBtn.addEventListener('click', function() {
-		if (container.style.display === "block") {
-			container.style.display = "none"
-		} else{
-			container.style.display =  "block";
-		}
-	})
+	helpBtn.addEventListener('click', hideContainers);
 
 }; //end window.onload
 
@@ -127,3 +121,11 @@ function redirectAbout() {
 	chrome.tabs.create({ url: 'https://github.com/Fryles/canvas-to-calendar#readme' });
 }
 
+//toggles display css property on all containers
+function hideContainers(){
+	console.log("button click is detected");
+	const container = document.getElementsByClassName('container');
+	for (var i = 0; i < container.length; i++) {
+		container[i].classList.toggle('invisible');
+	  }
+}
