@@ -98,114 +98,30 @@ function storeSettings() {
 	});
 }
 
-function loadSettings() {
-	chrome.storage.sync.get("tweakOptions", function (data) {
-		if (data.tweakOptions != undefined) {
-			console.log("Tweak options loaded: ", data.tweakOptions);
-			options = data.tweakOptions;
-		} else {
-			console.log("Tweak options not found, using default");
-			storeSettings();
-		}
-	});
-}
-
-function watermark(on) {
-	document.getElementsByClassName("ic-Layout-watermark")[0].style.display = on
-		? "none"
-		: "block";
-}
-
-function zenMode(on) {
-	document.getElementById("right-side-wrapper").style.display = on
-		? "none"
-		: "block";
-	if (document.getElementById("footer")) {
-		document.getElementById("footer").style.display = on ? "none" : "block";
-	}
-	if (document.getElementsByClassName("ic-DashboardCard__action-badge")) {
-		let badges = document.getElementsByClassName(
-			"ic-DashboardCard__action-badge"
-		);
-		for (let i = 0; i < badges.length; i++) {
-			badges[i].style.display = on ? "none" : "block";
-		}
-	}
-}
-
-function darkMode(on) {
-	if (on && !document.getElementById("darkModeStylesheet")) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.open(
-			"GET",
-			"https://raw.githubusercontent.com/DeGrandis/canvas-dark-mode/master/plugin/css/styles.css",
-			true
-		);
-		xhttp.onreadystatechange = function () {
-			if (xhttp.readyState === 4) {
-				if (xhttp.status === 200) {
-					var link = document.createElement("style");
-					link.innerHTML = xhttp.responseText;
-					link.id = "darkModeStylesheet";
-					document.getElementsByTagName("head")[0].appendChild(link);
-				}
-			}
-		};
-		xhttp.send(null);
+async function loadSettings() {
+	let settings = await chrome.storage.sync.get("tweakOptions");
+	if (settings.tweakOptions == null || settings.tweakOptions == undefined) {
+		storeSettings();
 	} else {
-		if (document.getElementById("darkModeStylesheet")) {
-			document.getElementById("darkModeStylesheet").remove();
-		}
+		options = settings.tweakOptions;
+		applySettings();
 	}
 }
 
 function applySettings() {
-	watermark(options.removeWatermark);
-	zenMode(options.zenMode);
-	darkMode(options.darkMode);
-	setGradesOnDash(options.showGrades);
-}
-
-function setGradesOnDash(on) {
-	if (on) {
-		let courseTitles = document.getElementsByClassName(
-			"ic-DashboardCard__header_content"
-		);
-		for (let i = 0; i < courseTitles.length; i++) {
-			let course = courseTitles[i];
-			let courseName = course.getElementsByClassName(
-				"ic-DashboardCard__header-title"
-			)[0].innerText;
-			let courseCode = course.getElementsByClassName(
-				"ic-DashboardCard__header-subtitle"
-			)[0].innerText;
-			for (let j = 0; j < courses.length; j++) {
-				let courseGrade = courses[j];
-				if (
-					(courseGrade.name == courseName ||
-						courseGrade.course_code == courseCode) &&
-					courseGrade.grade != null
-				) {
-					let grade = courseGrade.grade + "%";
-					let gradeDiv = document.createElement("span");
-					gradeDiv.className =
-						"ic-DashboardCard__header-title c2cGrade ellipsis";
-					gradeDiv.style = "float: right; font-size: 1em;";
-					gradeDiv.innerText = grade;
-					course
-						.getElementsByClassName("ic-DashboardCard__header-title")[0]
-						.appendChild(gradeDiv);
-				}
-			}
+	(async () => {
+		const [tab] = await chrome.tabs.query({
+			active: true,
+			lastFocusedWindow: true,
+		});
+		const response = await chrome.tabs.sendMessage(tab.id, {
+			action: "loadSettings",
+		});
+		// do something with response here, not outside the function
+		console.log("refreshed settings: ");
+		console.log(response);
+		if (response.courses) {
+			courses = response.courses;
 		}
-	} else {
-		let grades = document.getElementsByClassName("c2cGrade");
-		for (let i = 0; i < grades.length; i++) {
-			grades[i].remove();
-		}
-	}
-}
-
-async function getCourses() {
-	return await chrome.storage.sync.get("courses").courses;
+	})();
 }
