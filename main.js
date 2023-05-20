@@ -59,7 +59,8 @@ async function refreshCourses() {
 		{
 			action: "loadCourses",
 		},
-		(response) => {
+		function (response) {
+			console.log("RESPONSE: ", response);
 			courses = response.courses;
 		}
 	);

@@ -101,6 +101,7 @@ async function loadCourses() {
 				console.log("saved user: ", user);
 			});
 		});
+	console.log("courses set in autoload: ", courses);
 	return courses;
 }
 
@@ -166,8 +167,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function refreshResponseHelper(sendResponse) {
 	let c = await loadCourses();
-	console.log("SENDING: ");
-	console.log(c);
+	console.log("SENDING: ", c);
 	sendResponse({ courses: c });
 }
 
@@ -234,8 +234,9 @@ function darkMode(on) {
 	}
 }
 
-function setGradesOnDash(on) {
-	console.log(courses);
+async function setGradesOnDash(on) {
+	courses = await getCourses();
+	console.log("Courses used in setting gradesOnDash", courses);
 	if (courses == null || courses == undefined) {
 		return;
 	}
@@ -276,4 +277,5 @@ function setGradesOnDash(on) {
 			grades[i].remove();
 		}
 	}
+	return;
 }
