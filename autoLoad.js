@@ -3,7 +3,8 @@
 console.log("autoLoad is... loaded");
 //courses is global so it can be accessed by setGradesOnDash()
 var courses;
-//
+
+//we wait to load courses, then wait to load settings, then apply them
 window.onload = async function () {
 	await loadCourses();
 	var options = await loadSettings();
@@ -27,11 +28,13 @@ async function loadCourses() {
 			Authorization: "Bearer " + token,
 		},
 	}).then((response) => response.json());
+
 	if (user.errors && user.errors.length > 0) {
 		//toast("Error accessing Canvas LMS API. Probably a bad token...");
 		console.log("ERROR IN FETCH: " + user.errors[0].message);
 		return false;
 	}
+
 	var enrollments = await fetch(
 		"https://canvas.ucsc.edu/api/v1/users/" + user.id + "/enrollments",
 		{
@@ -42,8 +45,9 @@ async function loadCourses() {
 			},
 		}
 	).then((response) => response.json());
+
 	var base = "https://canvas.ucsc.edu/api/v1/"; //base url for canvas api
-	fetch(
+	await fetch(
 		base + "courses" + "?per_page=100&include[]=concluded&include[]=favorites", //fetch all courses
 		{
 			headers: {
@@ -53,7 +57,7 @@ async function loadCourses() {
 		}
 	)
 		.then((response) => response.json())
-		.then((data) => {
+		.then(async (data) => {
 			if (data.errors && data.errors.length > 0) {
 				toast("Error loading courses. Probably a bad token...");
 				return false;
@@ -89,11 +93,11 @@ async function loadCourses() {
 					});
 			}
 			//save courses to storage
-			chrome.storage.sync.set({ courses: courses }, function () {
+			await chrome.storage.sync.set({ courses: courses }, function () {
 				console.log("saved courses: ", courses);
 			});
 			// save user to storage
-			chrome.storage.sync.set({ user: user }, function () {
+			await chrome.storage.sync.set({ user: user }, function () {
 				console.log("saved user: ", user);
 			});
 		});
@@ -153,16 +157,19 @@ async function loadSettings() {
 }
 
 //listen for message from extension popup
-chrome.runtime.onMessage.addListener(async function (
-	request,
-	sender,
-	sendResponse
-) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === "loadCourses") {
-		var courses = await loadCourses();
-		sendResponse({ response: courses });
+		refreshResponseHelper(sendResponse);
 	}
+	return true;
 });
+
+async function refreshResponseHelper(sendResponse) {
+	let c = await loadCourses();
+	console.log("SENDING: ");
+	console.log(c);
+	sendResponse({ courses: c });
+}
 
 //listen for message from tweaks menu
 chrome.runtime.onMessage.addListener(async function (
@@ -174,6 +181,7 @@ chrome.runtime.onMessage.addListener(async function (
 		let options = await loadSettings();
 		applySettings(options);
 		sendResponse({ response: "success" });
+		return true;
 	}
 });
 
@@ -245,7 +253,6 @@ function setGradesOnDash(on) {
 			)[0].innerText;
 			for (let j = 0; j < courses.length; j++) {
 				let courseGrade = courses[j];
-				console.log(courseGrade, courseName, courseCode);
 				if (
 					(courseGrade.name == courseName ||
 						courseGrade.course_code == courseCode) &&

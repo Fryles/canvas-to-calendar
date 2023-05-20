@@ -37,7 +37,6 @@ window.onload = function () {
 		}
 	});
 
-
 	const tweakBtn = document.querySelector("#tweaksBtn");
 	tweakBtn.addEventListener("click", async () => {
 		chrome.scripting.executeScript({
@@ -46,32 +45,24 @@ window.onload = function () {
 		});
 	});
 
-	const helpBtn = document.querySelector('#helpBtn');
-	helpBtn.addEventListener('click', getHelp);
-	
-	
-
+	const helpBtn = document.querySelector("#helpBtn");
+	helpBtn.addEventListener("click", getHelp);
 }; //end window.onload
 
 // FUNCTIONS
 
-//send message to content script to load courses
-function refreshCourses() {
-	(async () => {
-		const [tab] = await chrome.tabs.query({
-			active: true,
-			lastFocusedWindow: true,
-		});
-		const response = await chrome.tabs.sendMessage(tab.id, {
+//send message to autoLoad to load courses
+//This function is ASYNC so courses wont be loaded immediately
+async function refreshCourses() {
+	await chrome.tabs.sendMessage(
+		tabId,
+		{
 			action: "loadCourses",
-		});
-		// do something with response here, not outside the function
-		console.log("refreshed courses: ");
-		console.log(response);
-		if (response.courses) {
+		},
+		(response) => {
 			courses = response.courses;
 		}
-	})();
+	);
 }
 
 async function storeToken(token) {
@@ -90,5 +81,11 @@ async function loadToken() {
 }
 
 function getHelp() {
-	chrome.tabs.create({ url: 'https://github.com/Fryles/canvas-to-calendar#readme' });
+	chrome.tabs.create({
+		url: "https://github.com/Fryles/canvas-to-calendar#readme",
+	});
+}
+
+async function getCourses() {
+	return await chrome.storage.sync.get("courses").courses;
 }
