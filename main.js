@@ -16,7 +16,7 @@ window.onload = function () {
 
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	scrapeBtn.addEventListener("click", async () => {
-		refreshCourses();
+		await refreshCourses();
 		console.log(courses);
 	});
 
