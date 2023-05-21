@@ -126,12 +126,15 @@ function hideContainers(){
 	const container = document.querySelector('.container');
 	const footer = document.querySelector('.footer');
 	const instruction = document.querySelector('.instruction');
+	const heading = document.getElementById('c2cHeading');
 
 	container.classList.toggle('invisible');
 	footer.classList.toggle('invisible');
-
+	heading.classList.add('invisible');
+	//heading.classList.toggle('invisible');
 	if (container.classList.contains('invisible') && footer.classList.contains('invisible')){
 		console.log("containers invisible");
+
 		instruction.classList.remove('invisible'); // Show the instruction element
 		var closeBtn = document.createElement("button");
 		closeBtn.id = "closeBtn";
@@ -154,8 +157,8 @@ function hideContainers(){
 			container.classList.toggle('invisible');
 			footer.classList.toggle('invisible');
 			instruction.classList.toggle('invisible');
+			heading.classList.remove('invisible');
 		});
-		
 		instruction.appendChild(closeBtn);
 	} else {
 		instruction.classList.add('invisible'); // Hide the instruction element
