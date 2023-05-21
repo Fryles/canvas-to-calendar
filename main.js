@@ -1,9 +1,6 @@
 // GLOBALS
 var courses = []; //array of courses and their respective assignments
-var enrollments = []; //array of enrollments (used to get grades)
-var token = "";
 var tabId;
-var canvasUserObj = {}; //object containing user info
 
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 	var tab = tabs[0];
@@ -13,14 +10,13 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 // EVENT LISTENERS/INITIALIZATION
 window.onload = function () {
 	// This code will run when the popup DOM is ready to query
-	loadToken();
 
-	// Gets authorization from User once extension is opened.
-	getAuthorization();
+	//sets placeholder text to token
+	loadToken();
 
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	scrapeBtn.addEventListener("click", async () => {
-		loadAssignments()
+		await refreshCourses();
 		console.log(courses);
 	});
 
@@ -31,13 +27,13 @@ window.onload = function () {
 	});
 
 	const tokenInput = document.querySelector("#floatingInput");
-	tokenInput.addEventListener("keyup", (e) => {
+	tokenInput.addEventListener("keyup", async function (e) {
 		// listen to a keyup event on the input field
 		if (e.keyCode == 13) {
 			// if user presses enter
-			token = tokenInput.value;
-			storeToken(token);
-			getUser();
+			let token = tokenInput.value;
+			await storeToken(token);
+			refreshCourses();
 		}
 	});
 
@@ -48,129 +44,50 @@ window.onload = function () {
 			files: ["./tweaks.js"],
 		});
 	});
+
+	const helpBtn = document.querySelector("#helpBtn");
+	helpBtn.addEventListener("click", getHelp);
 }; //end window.onload
 
 // FUNCTIONS
-function getUser() {
-	return fetch("https://canvas.ucsc.edu/api/v1/users/self", {
-		headers: {
-			//headers for authorization (token)
-			Accept: "application/json",
-			Authorization: "Bearer " + token,
+
+//send message to autoLoad to load courses
+//This function is ASYNC so courses wont be loaded immediately
+async function refreshCourses() {
+	await chrome.tabs.sendMessage(
+		tabId,
+		{
+			action: "loadCourses",
 		},
-	})
-		.then((response) => response.json())
-		.then((data) => {
-			canvasUserObj = data;
-			loadEnrollments();
-			return data;
-		});
-}
-
-function loadAssignments() {
-	courses = []; //reset courses
-	var base = "https://canvas.ucsc.edu/api/v1/"; //base url for canvas api
-	fetch(
-		base + "courses" + "?per_page=100&include[]=concluded&include[]=favorites", //fetch all courses
-		{
-			headers: {
-				//headers for authorization (token)
-				Accept: "application/json",
-				Authorization: "Bearer " + token,
-			},
+		(response) => {
+			courses = response.courses;
 		}
-	)
-		.then((response) => response.json())
-		.then((data) => {
-			if (data.errors && data.errors.length > 0) {
-				// bad request
-				alert(data.errors[0].message);
-				return;
-			}
-			//Courses have been fetched and converted to JSON
-			for (let i = 0; i < data.length; i++) {
-				// filter all courses by concluded and is_favorite to get only active courses
-				if (data[i].concluded == false && data[i].is_favorite == true) {
-					courses.push(data[i]);
-				}
-			}
-			//courses now contains all active courses
-			//now we need to get all assignments and grades for each course
-
-			let courseGrades = []; //for tweaks script
-			for (let i = 0; i < courses.length; i++) {
-				courses[i].assignments = [];
-				//get grade for each course
-				for (let j = 0; j < enrollments.length; j++) {
-					if (enrollments[j].course_id == courses[i].id) {
-						courses[i].grade = enrollments[j].grades.current_score;
-						courseGrades.push({
-							course: courses[i].name,
-							courseId: courses[i].id,
-							courseCode: courses[i].course_code,
-							courseOgName: courses[i].original_name,
-							grade: enrollments[j].grades.current_score,
-							letterGrade: enrollments[j].grades.current_grade,
-						});
-					}
-				}
-				fetch(base + "courses/" + courses[i].id + "/assignments", {
-					headers: {
-						//headers for authorization (token)
-						Accept: "application/json",
-						Authorization: "Bearer " + token,
-					},
-				})
-					.then((response) => response.json())
-					.then((data) => {
-						//assignments have been fetched and converted to JSON
-						for (let j = 0; j < data.length; j++) {
-							//push all assignments to their respective course
-							courses[i].assignments.push(data[j]);
-						}
-					});
-			}
-			//save courseGrades to storage for tweaks script
-			chrome.storage.sync.set({ courseGrades: courseGrades }, function () {
-				console.log("saved courseGrades: ", courseGrades);
-			});
-		});
+	);
 }
 
-function loadEnrollments() {
-	return fetch(
-		"https://canvas.ucsc.edu/api/v1/users/" + canvasUserObj.id + "/enrollments",
-		{
-			headers: {
-				//headers for authorization (token)
-				Accept: "application/json",
-				Authorization: "Bearer " + token,
-			},
-		}
-	)
-		.then((response) => response.json())
-		.then((data) => {
-			//enrollments have been fetched and converted to JSON
-			enrollments = data;
-			return enrollments;
-		});
+async function storeToken(token) {
+	await chrome.storage.sync.set({ token: token });
+	console.log("saved token: ", token);
 }
 
-function storeToken(token) {
-	chrome.storage.sync.set({ token: token }, function () {
-		console.log("saved token: ", token);
+async function loadToken() {
+	var t = await chrome.storage.sync.get("token");
+	console.log("loaded token: ", t.token);
+	if (t.token == "" || t.token == null || t.token == undefined) {
+		return;
+	}
+	document.querySelector("#floatingInput").placeholder = t.token;
+	return t.token;
+}
+
+function getHelp() {
+	chrome.tabs.create({
+		url: "https://github.com/Fryles/canvas-to-calendar#readme",
 	});
 }
 
-function loadToken() {
-	chrome.storage.sync.get("token", function (obj) {
-		console.log("loaded: " + obj.token);
-		token = obj.token;
-		if (token != "" && token != null && token != undefined) {
-			document.querySelector("#floatingInput").placeholder = token;
-			getUser();
-		}
-	});
+async function getCourses() {
+	return await chrome.storage.sync.get("courses").courses;
 }
 
 // Still working on this.
