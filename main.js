@@ -14,10 +14,14 @@ window.onload = function () {
 	//sets placeholder text to token
 	loadToken();
 
+	// Gets authorization from User once extension is opened.
+	getAuthorization();
+
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	scrapeBtn.addEventListener("click", async () => {
 		await refreshCourses();
 		console.log(courses);
+		console.log("Course 1: ", courses[0], "\nCourse 2: ", courses[1], "Course 3: ", courses[2]);
 	});
 
 	const selectAsgnmsBtn = document.querySelector("#asgnmBtn");
@@ -54,15 +58,18 @@ window.onload = function () {
 //send message to autoLoad to load courses
 //This function is ASYNC so courses wont be loaded immediately
 async function refreshCourses() {
-	await chrome.tabs.sendMessage(
-		tabId,
-		{
-			action: "loadCourses",
-		},
-		(response) => {
-			courses = response.courses;
-		}
-	);
+	return new Promise((resolved) => {
+		chrome.tabs.sendMessage(
+			tabId,
+			{
+				action: "loadCourses",
+			},
+			function (response) {
+				console.log("RESPONSE: ", response);
+				courses = response.courses;
+				resolved();
+		});
+	});
 }
 
 async function storeToken(token) {
