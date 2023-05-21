@@ -46,7 +46,7 @@ window.onload = function () {
 	
 	//hide container and show directions in place
 	const helpBtn = document.querySelector('#helpBtn');
-	helpBtn.addEventListener('click', hideContainers);
+	helpBtn.addEventListener('click', hideContainers)
 
 }; //end window.onload
 
@@ -123,9 +123,41 @@ function redirectAbout() {
 
 //toggles display css property on all containers
 function hideContainers(){
-	console.log("button click is detected");
-	const container = document.getElementsByClassName('container');
-	for (var i = 0; i < container.length; i++) {
-		container[i].classList.toggle('invisible');
-	  }
+	const container = document.querySelector('.container');
+	const footer = document.querySelector('.footer');
+	const instruction = document.querySelector('.instruction');
+
+	container.classList.toggle('invisible');
+	footer.classList.toggle('invisible');
+
+	if (container.classList.contains('invisible') && footer.classList.contains('invisible')){
+		console.log("containers invisible");
+		instruction.classList.remove('invisible'); // Show the instruction element
+		var closeBtn = document.createElement("button");
+		closeBtn.id = "closeBtn";
+		closeBtn.innerHTML = "X";
+		closeBtn.style.width = "30px";
+		closeBtn.style.height = "30px";
+		closeBtn.style.position = "absolute";
+		closeBtn.style.top = "6px";
+		closeBtn.style.right = "6px";
+		closeBtn.style.borderRadius = "50%";
+		closeBtn.style.backgroundColor = "rgba(0,0,0,0.5)";
+		closeBtn.style.color = "white";
+		closeBtn.style.fontSize = "20px";
+		closeBtn.style.borderStyle = "solid";
+		closeBtn.style.borderColor = "white";
+		closeBtn.style.fontFamily = "sans-serif";
+		closeBtn.style.cursor = "pointer";
+	
+		closeBtn.addEventListener("click", () => {
+			container.classList.toggle('invisible');
+			footer.classList.toggle('invisible');
+			instruction.classList.toggle('invisible');
+		});
+		
+		instruction.appendChild(closeBtn);
+	} else {
+		instruction.classList.add('invisible'); // Hide the instruction element
+	}
 }
