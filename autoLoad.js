@@ -208,30 +208,18 @@ function zenMode(on) {
 	}
 }
 
-function darkMode(on) {
-	if (on && !document.getElementById("darkModeStylesheet")) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.open(
-			"GET",
-			"https://raw.githubusercontent.com/DeGrandis/canvas-dark-mode/master/plugin/css/styles.css",
-			true
-		);
-		xhttp.onreadystatechange = function () {
-			if (xhttp.readyState === 4) {
-				if (xhttp.status === 200) {
-					var link = document.createElement("style");
-					link.innerHTML = xhttp.responseText;
-					link.id = "darkModeStylesheet";
-					document.getElementsByTagName("head")[0].appendChild(link);
-				}
-			}
-		};
-		xhttp.send(null);
-	} else {
-		if (document.getElementById("darkModeStylesheet")) {
-			document.getElementById("darkModeStylesheet").remove();
-		}
+async function darkMode(on) {
+	if (!on && document.getElementById("darkModeStylesheet")){
+		return document.head.removeChild(document.getElementById("darkModeStylesheet"));
 	}
+
+	let response = await fetch("https://raw.githubusercontent.com/DeGrandis/canvas-dark-mode/master/plugin/css/styles.css");
+	let css  = await response.text();
+
+	const link = document.createElement("style");
+	link.innerHTML = css;
+	link.id = "darkModeStylesheet";
+	document.head.appendChild(link);
 }
 
 async function setGradesOnDash(on) {
