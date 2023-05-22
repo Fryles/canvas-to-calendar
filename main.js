@@ -48,6 +48,13 @@ window.onload = function () {
 	const helpBtn = document.querySelector('#helpBtn');
 	helpBtn.addEventListener('click', hideContainers)
 
+	//toast for api storage
+	document.getElementById('floatingInput').addEventListener('keyup', function(event) {
+		if (event.key === 'Enter') {
+		  event.preventDefault();
+		  showToast();
+		}
+	  });
 }; //end window.onload
 
 function loadAssignments() {
@@ -163,4 +170,20 @@ function hideContainers(){
 	} else {
 		instruction.classList.add('invisible'); // Hide the instruction element
 	}
+}
+
+function showToast() {
+	const toastContainer = document.createElement('div');
+	toastContainer.className = 'toast-container';
+  
+	var toast = document.createElement('div');
+	toast.className = 'toast';
+	toast.innerHTML = 'User API key saved!';
+	
+	toastContainer.appendChild(toast);
+	document.body.appendChild(toastContainer);
+	
+	setTimeout(function() {
+	  toastContainer.remove();
+	}, 3000);
 }
