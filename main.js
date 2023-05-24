@@ -24,26 +24,14 @@ window.onload = function () {
 	scrapeBtn.addEventListener("click", async () => {
 		await refreshCourses();
 		console.log(courses);
-		console.log("Course 1: ", courses[0].assignments);
-		console.log("There are", courses[0].assignments.length, "assignments in this course.");
-		console.log("The first assignment for this course is ", courses[0].assignments[0].name);
-		let event = {
-				'summary': courses[0].assignments[0].name + " (" + courses[0].course_code + ")",
-				'description': "Assignment Link: " + courses[0].assignments[0].html_url + "\n" + courses[0].assignments[0].description,
-				'start': {
-				  'dateTime': courses[0].assignments[0].unlock_at,
-				  'timeZone': courses[0].time_zone
-				},
-				'end': {
-				  'dateTime': courses[0].assignments[0].due_at,
-				  'timeZone': courses[0].time_zone
-				},
-				'reminders': {
-					'useDefault': false,
-				},
-				'supportsAttachments': false
-			  };
-			  insertEvent(event);
+
+		// Temporary placement, but it works
+		createEvents();
+		for(let i = 0; i < allEvents.length; i++) {
+			await insertEvent(allEvents[i]);
+			console.log(i, "request");
+		}
+		console.log(allEvents);
 	});
 
 	const selectAsgnmsBtn = document.querySelector("#asgnmBtn");
@@ -119,65 +107,65 @@ async function getCourses() {
 	return await chrome.storage.sync.get("courses").courses;
 }
 
-// Still working on this.
-/*
+// This will take extract all the necessary metadata from the courses array, create events with it, and push those events onto allEvents array.
 function createEvents () {
 	for (let someCourse = 0; someCourse < courses.length; someCourse++) {
 		let courseCode = courses[someCourse].course_code;
 		for (let anAssignment = 0; anAssignment < courses[someCourse].assignments.length; anAssignment++){
+			
+			let startTime = courses[someCourse].assignments[anAssignment].unlock_at;
+			// Checks if there's an actual start time.
+			if(startTime == null) {
+				startTime = courses[someCourse].assignments[anAssignment].created_at;
+			}
+
+			// Initialize the event with the needed metadata
 			let event = {
-				'summary': 'Google I/O 2015',
-				'location': courses[someCourse].assignments.html_url,
-				'description': 'A chance to hear more about Google\'s developer products.',
+				'summary': courses[someCourse].assignments[anAssignment].name + " (" + courseCode + ")",
+				'description': "Assignment Link: " + courses[someCourse].assignments[anAssignment].html_url + "\n" + courses[someCourse].assignments[anAssignment].description,
 				'start': {
-				  'dateTime': '2023-05-28T09:00:00-07:00',
-				  'timeZone': 'America/Los_Angeles'
+				  'dateTime': startTime,
+				  'timeZone': courses[someCourse].time_zone
 				},
 				'end': {
-				  'dateTime': '2023-05-28T17:00:00-07:00',
-				  'timeZone': 'America/Los_Angeles'
+				  'dateTime': courses[someCourse].assignments[anAssignment].due_at,
+				  'timeZone': courses[someCourse].time_zone
 				},
-				'recurrence': [
-				  'RRULE:FREQ=DAILY;COUNT=2'
-				],
-				'attendees': [
-				  {'email': 'lpage@example.com'},
-				  {'email': 'sbrin@example.com'}
-				],
 				'reminders': {
-				  'useDefault': false,
-				  'overrides': [
-					{'method': 'email', 'minutes': 24 * 60},
-					{'method': 'popup', 'minutes': 10}
-				  ]
+					'useDefault': false,
 				}
-			  };
-			  allEvents.push(event);
+			};
+
+			// Push this event to our allEvents array
+			allEvents.push(event);
 		}
 	}
 }
-*/
-// Takes an event and inserts it into Google Calendar.
-function insertEvent(aEvent) {	
-	// Get access token to setup initialization for API request.	
-	chrome.identity.getAuthToken({'interactive' : true}, function(token) {
-		// Initializes the API request.
-		let init = {
-			method: 'POST',
-			async: true,
-			headers: {
-				Authorization: 'Bearer ' + token,
-				'Content-Type': 'application/json'
-			},		
-			body: JSON.stringify(aEvent)
-		};
 
-		// Fetches the API request.
-		fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', init)
-		.then((response) => response.json()) // Transform the data into json
-		.then(function(data) {
-			console.log(data);
-	  	})
+// Takes an event and inserts it into Google Calendar.
+async function insertEvent(aEvent) {	
+	return new Promise((resolved) => {
+		// Get access token to setup initialization for API request.	
+		chrome.identity.getAuthToken({'interactive' : true}, function(token) {
+			// Initializes the API request.
+			let init = {
+				method: 'POST',
+				async: true,
+				headers: {
+					Authorization: 'Bearer ' + token,
+					'Content-Type': 'application/json'
+				},		
+				body: JSON.stringify(aEvent)
+			};
+
+			// Fetches the API request.
+			fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', init)
+			.then((response) => response.json()) // Transform the data into json
+			.then(function(data) {
+				console.log(data);
+				resolved();
+	  		})
+		});
 	});
 }
 
