@@ -51,16 +51,21 @@ window.onload = function () {
 		}
 	});
 
-	const tweakBtn = document.querySelector("#tweaksBtn");
-	tweakBtn.addEventListener("click", async () => {
-		chrome.scripting.executeScript({
-			target: { tabId: tabId },
-			files: ["./tweaks.js"],
-		});
-	});
+	//redirect user to github repo 
+	const aboutBtn = document.querySelector('#aboutBtn');
+	aboutBtn.addEventListener('click', redirectAbout);
+	
+	//hide container and show directions in place
+	const helpBtn = document.querySelector('#helpBtn');
+	helpBtn.addEventListener('click', hideContainers)
 
-	const helpBtn = document.querySelector("#helpBtn");
-	helpBtn.addEventListener("click", getHelp);
+	//toast for api storage
+	document.getElementById('floatingInput').addEventListener('keyup', function(event) {
+		if (event.key === 'Enter') {
+		  event.preventDefault();
+		  showToast();
+		}
+	  });
 }; //end window.onload
 
 // FUNCTIONS
@@ -80,6 +85,7 @@ async function refreshCourses() {
 				resolved();
 		});
 	});
+
 }
 
 async function storeToken(token) {
@@ -95,6 +101,71 @@ async function loadToken() {
 	}
 	document.querySelector("#floatingInput").placeholder = t.token;
 	return t.token;
+}
+
+//creates new chrome tab and redirects user to specified link
+function redirectAbout() {
+	chrome.tabs.create({ url: 'https://github.com/Fryles/canvas-to-calendar#readme' });
+}
+
+//toggles display css property on all containers
+function hideContainers(){
+	const container = document.querySelector('.container');
+	const footer = document.querySelector('.footer');
+	const instruction = document.querySelector('.instruction');
+	const heading = document.getElementById('c2cHeading');
+
+	container.classList.toggle('invisible');
+	footer.classList.toggle('invisible');
+	heading.classList.add('invisible');
+	//heading.classList.toggle('invisible');
+	if (container.classList.contains('invisible') && footer.classList.contains('invisible')){
+		console.log("containers invisible");
+
+		instruction.classList.remove('invisible'); // Show the instruction element
+		var closeBtn = document.createElement("button");
+		closeBtn.id = "closeBtn";
+		closeBtn.innerHTML = "X";
+		closeBtn.style.width = "30px";
+		closeBtn.style.height = "30px";
+		closeBtn.style.position = "absolute";
+		closeBtn.style.top = "6px";
+		closeBtn.style.right = "6px";
+		closeBtn.style.borderRadius = "50%";
+		closeBtn.style.backgroundColor = "rgba(0,0,0,0.5)";
+		closeBtn.style.color = "white";
+		closeBtn.style.fontSize = "20px";
+		closeBtn.style.borderStyle = "solid";
+		closeBtn.style.borderColor = "white";
+		closeBtn.style.fontFamily = "sans-serif";
+		closeBtn.style.cursor = "pointer";
+	
+		closeBtn.addEventListener("click", () => {
+			container.classList.toggle('invisible');
+			footer.classList.toggle('invisible');
+			instruction.classList.toggle('invisible');
+			heading.classList.remove('invisible');
+		});
+		instruction.appendChild(closeBtn);
+	} else {
+		instruction.classList.add('invisible'); // Hide the instruction element
+	}
+}
+
+function showToast() {
+	const toastContainer = document.createElement('div');
+	toastContainer.className = 'toast-container';
+  
+	var toast = document.createElement('div');
+	toast.className = 'toast';
+	toast.innerHTML = 'User API key saved!';
+	
+	toastContainer.appendChild(toast);
+	document.body.appendChild(toastContainer);
+	
+	setTimeout(function() {
+	  toastContainer.remove();
+	}, 3000);
 }
 
 function getHelp() {

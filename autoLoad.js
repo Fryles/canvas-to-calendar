@@ -167,6 +167,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function refreshResponseHelper(sendResponse) {
 	let c =  await loadCourses();
+
 	console.log("SENDING: ", c);
 	sendResponse({ courses: c });
 }
