@@ -72,14 +72,16 @@ async function loadCourses() {
 
 		course.grade = currentCourseEnrollment.grades.current_score;
 
-		let currCourseAssignments = await fetch(`${base}/courses/${course.id}/assignments`, {
+		let response = await fetch(`${base}/courses/${course.id}/assignments?per_page=100`, {
 			headers: {
 				//headers for authorization (token)
 				Accept: "application/json",
 				Authorization: "Bearer " + token,
 			},
 
-		}).then((response) => response.json())
+		})
+
+		let currCourseAssignments = await response.json();
 
 		course.assignments = currCourseAssignments;
 	}

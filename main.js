@@ -3,7 +3,7 @@ var courses = []; //array of courses and their respective assignments
 var tabId;
 
 // Array of assignments within all the courses.
-var allEvents = [] 
+var allEvents = []
 
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 	var tab = tabs[0];
@@ -23,27 +23,32 @@ window.onload = function () {
 	const scrapeBtn = document.querySelector("#scrapeBtn");
 	scrapeBtn.addEventListener("click", async () => {
 		await refreshCourses();
-		console.log(courses);
-		console.log("Course 1: ", courses[0].assignments);
-		console.log("There are", courses[0].assignments.length, "assignments in this course.");
-		console.log("The first assignment for this course is ", courses[0].assignments[0].name);
-		let event = {
-				'summary': courses[0].assignments[0].name + " (" + courses[0].course_code + ")",
-				'description': "Assignment Link: " + courses[0].assignments[0].html_url + "\n" + courses[0].assignments[0].description,
-				'start': {
-				  'dateTime': courses[0].assignments[0].unlock_at,
-				  'timeZone': courses[0].time_zone
-				},
-				'end': {
-				  'dateTime': courses[0].assignments[0].due_at,
-				  'timeZone': courses[0].time_zone
-				},
-				'reminders': {
-					'useDefault': false,
-				},
-				'supportsAttachments': false
-			  };
-			  insertEvent(event);
+		// console.log(courses);
+		// console.log("Course 1: ", courses[1].assignments);
+		// console.log("There are", courses[1].assignments.length, "assignments in this course.");
+		// console.log("The first assignment for this course is ", courses[1].assignments[4].name);
+		// let event = {
+		// 	// 'id': courses[1].assignments[3].id,
+		// 	'summary': courses[1].assignments[4].name + " (" + courses[1].course_code + ")",
+		// 	'description': "Assignment Link: " + courses[1].assignments[4].html_url + "\n" + courses[1].assignments[4].description,
+		// 	'start': {
+		// 		'dateTime': courses[1].assignments[4].unlock_at,
+		// 		'timeZone': courses[1].time_zone
+		// 	},
+		// 	'end': {
+		// 		'dateTime': courses[1].assignments[4].due_at,
+		// 		'timeZone': courses[1].time_zone
+		// 	},
+		// 	'reminders': {
+		// 		'useDefault': false,
+		// 	},
+		// 	'supportsAttachments': false
+		// };
+
+
+		// insertEvent(event);
+
+		createEvents();
 	});
 
 	const selectAsgnmsBtn = document.querySelector("#asgnmBtn");
@@ -79,6 +84,32 @@ window.onload = function () {
 
 //send message to autoLoad to load courses
 //This function is ASYNC so courses wont be loaded immediately
+
+async function getCurrentCalendarEvents(){
+	let token = await getAuthToken();
+
+	let calEvents = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+		headers: {
+			Authorization: 'Bearer ' + token,
+			'Content-Type': 'application/json'
+		},
+	})
+	.then(response => response.json());
+
+	let events = {};
+
+	for (let event of calEvents.items){
+		events[event.id] = event;
+	}
+	
+	return events
+}
+
+
+// function updateEvent(event, token){
+	
+// }
+
 async function refreshCourses() {
 	return new Promise((resolved) => {
 		chrome.tabs.sendMessage(
@@ -120,8 +151,64 @@ async function getCourses() {
 }
 
 // Still working on this.
-/*
-function createEvents () {
+
+async function createEvents() {
+
+	let currEvents = await getCurrentCalendarEvents();
+
+	courses = courses.splice(1);
+
+	for (let course of courses){
+
+		//Looping through individual assignments i the course
+		console.log(course.assignments.map(a => a.name).join('\n'))
+		for(let assignment of course.assignments){
+			let event = {
+				'id': assignment.id,
+				'summary': assignment.name + " (" + course.course_code + ")",
+				'description': "Assignment Link: " + assignment.html_url + "\n" + assignment.description,
+				'start': {
+					'dateTime': assignment.unlock_at,
+					'timeZone': course.time_zone
+				},
+				'end': {
+					'dateTime': assignment.due_at,
+					'timeZone': course.time_zone
+				},
+				'reminders': {
+					'useDefault': false,
+				},
+				'supportsAttachments': false
+			}
+
+			if (!assignment.unlock_at || !assignment.due_at) {
+				console.log(`Assignment ${event.summary} has no start/due date.`)
+				continue; //If assignment start or due dates are undefined.
+			}
+
+			let currentEvent = currEvents[assignment.id];
+			let shouldUpdate = false;
+
+			if (currentEvent){
+				if( event.description != currentEvent.description || event.start.dateTime != currentEvent.start.dateTime || event.end.dateTime != currentEvent.end.dateTime){
+					shouldUpdate = true;
+					console.log(`Assignment ${event.summary} changed, updating`)
+				} else {
+					console.log(`Assignment ${event.summary} already exists`)
+					continue;
+				}
+			}
+
+			await insertEvent(event, shouldUpdate);
+
+			await delay(2000);
+		}
+
+		break
+	}
+
+
+
 	for (let someCourse = 0; someCourse < courses.length; someCourse++) {
 		let courseCode = courses[someCourse].course_code;
 		for (let anAssignment = 0; anAssignment < courses[someCourse].assignments.length; anAssignment++){
@@ -156,34 +243,48 @@ function createEvents () {
 		}
 	}
 }
-*/
-// Takes an event and inserts it into Google Calendar.
-function insertEvent(aEvent) {
-	// Get access token to setup initialization for API request.	
-	chrome.identity.getAuthToken({'interactive' : true}, function(token) {
-		// Initializes the API request.
-		let init = {
-			method: 'POST',
-			async: true,
-			headers: {
-				Authorization: 'Bearer ' + token,
-				'Content-Type': 'application/json'
-			},		
-			body: JSON.stringify(aEvent)
-		};
 
-		// Fetches the API request.
-		fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', init)
-		.then((response) => response.json()) // Transform the data into json
-		.then(function(data) {
-			console.log(data);
-	  	})
-	});
+// Takes an event and inserts it into Google Calendar.
+async function insertEvent(aEvent, shouldUpdate) {
+	// Get access token to setup initialization for API request.
+
+	let token = await getAuthToken();
+
+	let init = {
+		method: shouldUpdate ? 'PUT' : 'POST', //ternary to see if shouldUpdate is true or false
+		async: true,
+		headers: {
+			Authorization: 'Bearer ' + token,
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(aEvent)
+	};
+
+	let url = 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
+
+	if (shouldUpdate) {
+		url += '/' + aEvent.id;
+	}
+
+	let response = await fetch(url, init)
+
+	console.log(response.statusCode, aEvent)
 }
 
+
 // Get intial authorization to access User's private Calendar data.
-function getAuthorization() {
+async function getAuthorization() {
 	chrome.identity.getAuthToken({'interactive' : true}, function(token) {
 		console.log(token)
 	});
+}
+
+// make auth token request async
+function getAuthToken() {
+	return new Promise(resolve => chrome.identity.getAuthToken({'interactive' : true}, resolve))
+}
+
+
+function delay(milliseconds) {
+	return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
