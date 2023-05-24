@@ -1,0 +1,27 @@
+<html>
+<body>
+<INPUT TYPE="button" NAME="create" VALUE="Generate List" onClick="createDDL([1, 2, 3, 4])"/>
+<INPUT TYPE="button" NAME="remove" VALUE="Remove From List" onClick="removeFromDDL()"/>
+<select id="assList">
+<option></option>
+</select>
+
+
+
+<script>
+    function createDDL(options){
+        var select = document.getElementById("assList");
+        for(var i = 0; i < options.length; i++) {
+            var opt = options[i];
+            var el = document.createElement("option");
+            el.textContent = opt;
+            el.value = opt;
+            select.appendChild(el);
+        }
+    }
+    function removeFromDDL(){
+        document.getElementById("assList").options[0] = null;
+    }
+</script>
+</body>
+</html>
