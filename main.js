@@ -139,11 +139,11 @@ function hideContainers() {
 		closeBtn.style.top = "6px";
 		closeBtn.style.right = "6px";
 		closeBtn.style.borderRadius = "50%";
-		closeBtn.style.backgroundColor = "rgba(0,0,0,0.5)";
-		closeBtn.style.color = "white";
+		closeBtn.style.backgroundColor = "rgba(#6485c4,0.5)";
+		closeBtn.style.color = "White";
 		closeBtn.style.fontSize = "20px";
 		closeBtn.style.borderStyle = "solid";
-		closeBtn.style.borderColor = "white";
+		closeBtn.style.borderColor = "#6485c4";
 		closeBtn.style.fontFamily = "sans-serif";
 		closeBtn.style.cursor = "pointer";
 
@@ -174,6 +174,11 @@ function showToast() {
 		toastContainer.remove();
 	}, 3000);
 }
+
+function getHelp() {
+	chrome.tabs.create({
+		url: "https://github.com/Fryles/canvas-to-calendar#readme",
+
 
 async function getCourses() {
 	return await chrome.storage.local.get("courses").courses;
