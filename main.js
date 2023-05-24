@@ -51,6 +51,14 @@ window.onload = function () {
 		}
 	});
 
+	const tweakBtn = document.querySelector("#tweaksBtn");
+	tweakBtn.addEventListener("click", async () => {
+		chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			files: ["./tweaks.js"],
+		});
+	});
+
 	//redirect user to github repo
 	const aboutBtn = document.querySelector("#aboutBtn");
 	aboutBtn.addEventListener("click", redirectAbout);
@@ -178,7 +186,8 @@ function showToast() {
 function getHelp() {
 	chrome.tabs.create({
 		url: "https://github.com/Fryles/canvas-to-calendar#readme",
-
+	});
+}
 
 async function getCourses() {
 	return await chrome.storage.local.get("courses").courses;

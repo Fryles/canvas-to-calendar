@@ -3,11 +3,17 @@
 console.log("autoLoad is... loaded");
 //courses is global so it can be accessed by setGradesOnDash()
 var courses;
+var options = {
+	zenMode: false,
+	darkMode: false,
+	removeWatermark: false,
+	showGrades: false,
+};
 
 //we wait to load courses, then wait to load settings, then apply them
 window.onload = async function () {
 	await loadCourses();
-	var options = await loadSettings();
+	options = await loadSettings();
 	applySettings(options);
 };
 
@@ -236,7 +242,6 @@ function darkMode(on) {
 }
 
 async function setGradesOnDash(on) {
-	courses = await getCourses();
 	console.log("Courses used in setting gradesOnDash", courses);
 	if (courses == null || courses == undefined) {
 		return;
