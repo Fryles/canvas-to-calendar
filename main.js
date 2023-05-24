@@ -2,6 +2,9 @@
 var courses = []; //array of courses and their respective assignments
 var tabId;
 
+// Array of assignments within all the courses.
+var allEvents = [] 
+
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 	var tab = tabs[0];
 	tabId = tab.id;
@@ -21,7 +24,26 @@ window.onload = function () {
 	scrapeBtn.addEventListener("click", async () => {
 		await refreshCourses();
 		console.log(courses);
-		console.log("Course 1: ", courses[0], "\nCourse 2: ", courses[1], "Course 3: ", courses[2]);
+		console.log("Course 1: ", courses[0].assignments);
+		console.log("There are", courses[0].assignments.length, "assignments in this course.");
+		console.log("The first assignment for this course is ", courses[0].assignments[0].name);
+		let event = {
+				'summary': courses[0].assignments[0].name + " (" + courses[0].course_code + ")",
+				'description': "Assignment Link: " + courses[0].assignments[0].html_url + "\n" + courses[0].assignments[0].description,
+				'start': {
+				  'dateTime': courses[0].assignments[0].unlock_at,
+				  'timeZone': courses[0].time_zone
+				},
+				'end': {
+				  'dateTime': courses[0].assignments[0].due_at,
+				  'timeZone': courses[0].time_zone
+				},
+				'reminders': {
+					'useDefault': false,
+				},
+				'supportsAttachments': false
+			  };
+			  insertEvent(event);
 	});
 
 	const selectAsgnmsBtn = document.querySelector("#asgnmBtn");
@@ -98,36 +120,43 @@ async function getCourses() {
 }
 
 // Still working on this.
-function createEvent (/*something*/) {
-	var event = {
-		'summary': 'Google I/O 2015',
-		'location': '800 Howard St., San Francisco, CA 94103',
-		'description': 'A chance to hear more about Google\'s developer products.',
-		'start': {
-		  'dateTime': '2023-05-28T09:00:00-07:00',
-		  'timeZone': 'America/Los_Angeles'
-		},
-		'end': {
-		  'dateTime': '2023-05-28T17:00:00-07:00',
-		  'timeZone': 'America/Los_Angeles'
-		},
-		'recurrence': [
-		  'RRULE:FREQ=DAILY;COUNT=2'
-		],
-		'attendees': [
-		  {'email': 'lpage@example.com'},
-		  {'email': 'sbrin@example.com'}
-		],
-		'reminders': {
-		  'useDefault': false,
-		  'overrides': [
-			{'method': 'email', 'minutes': 24 * 60},
-			{'method': 'popup', 'minutes': 10}
-		  ]
+/*
+function createEvents () {
+	for (let someCourse = 0; someCourse < courses.length; someCourse++) {
+		let courseCode = courses[someCourse].course_code;
+		for (let anAssignment = 0; anAssignment < courses[someCourse].assignments.length; anAssignment++){
+			let event = {
+				'summary': 'Google I/O 2015',
+				'location': courses[someCourse].assignments.html_url,
+				'description': 'A chance to hear more about Google\'s developer products.',
+				'start': {
+				  'dateTime': '2023-05-28T09:00:00-07:00',
+				  'timeZone': 'America/Los_Angeles'
+				},
+				'end': {
+				  'dateTime': '2023-05-28T17:00:00-07:00',
+				  'timeZone': 'America/Los_Angeles'
+				},
+				'recurrence': [
+				  'RRULE:FREQ=DAILY;COUNT=2'
+				],
+				'attendees': [
+				  {'email': 'lpage@example.com'},
+				  {'email': 'sbrin@example.com'}
+				],
+				'reminders': {
+				  'useDefault': false,
+				  'overrides': [
+					{'method': 'email', 'minutes': 24 * 60},
+					{'method': 'popup', 'minutes': 10}
+				  ]
+				}
+			  };
+			  allEvents.push(event);
 		}
-	  };
+	}
 }
-
+*/
 // Takes an event and inserts it into Google Calendar.
 function insertEvent(aEvent) {	
 	// Get access token to setup initialization for API request.	
