@@ -76,7 +76,7 @@ async function loadCourses() {
 						courses[i].grade = enrollments[j].grades.current_score;
 					}
 				}
-				fetch(base + "courses/" + courses[i].id + "/assignments", {
+				await fetch(base + "courses/" + courses[i].id + "/assignments", {
 					headers: {
 						//headers for authorization (token)
 						Accept: "application/json",
@@ -93,11 +93,11 @@ async function loadCourses() {
 					});
 			}
 			//save courses to storage
-			await chrome.storage.sync.set({ courses: courses }, function () {
+			await chrome.storage.local.set({ courses: courses }, function () {
 				console.log("saved courses: ", courses);
 			});
 			// save user to storage
-			await chrome.storage.sync.set({ user: user }, function () {
+			await chrome.storage.local.set({ user: user }, function () {
 				console.log("saved user: ", user);
 			});
 		});
@@ -107,7 +107,7 @@ async function loadCourses() {
 
 // checks if token is stored in chrome storage, if found, returns token
 async function loadToken() {
-	let token = await chrome.storage.sync.get("token");
+	let token = await chrome.storage.local.get("token");
 	if (token.token == "" || token.token == null || token.token == undefined) {
 		toast("Please set your Canvas token in the extension menu.");
 		return false;
@@ -140,17 +140,17 @@ function applySettings(options) {
 
 // loads courses from chrome storage
 async function getCourses() {
-	return await chrome.storage.sync.get("courses").courses;
+	return await chrome.storage.local.get("courses").courses;
 }
 
 // loads settings from chrome storage, or sets default settings if none are found
 async function loadSettings() {
-	let retrievedSettings = await chrome.storage.sync.get("tweakOptions");
+	let retrievedSettings = await chrome.storage.local.get("tweakOptions");
 	if (
 		retrievedSettings.tweakOptions == null ||
 		retrievedSettings.tweakOptions == undefined
 	) {
-		chrome.storage.sync.set({ tweakOptions: options });
+		chrome.storage.local.set({ tweakOptions: options });
 		return options;
 	} else {
 		return retrievedSettings.tweakOptions;
@@ -167,6 +167,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function refreshResponseHelper(sendResponse) {
 	let c = await loadCourses();
+
 	console.log("SENDING: ", c);
 	sendResponse({ courses: c });
 }

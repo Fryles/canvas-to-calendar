@@ -13,20 +13,20 @@ var courses = getCourses();
 
 // FUNCTIONS
 async function storeSettings() {
-	await chrome.storage.sync.set({ tweakOptions: options });
+	await chrome.storage.local.set({ tweakOptions: options });
 	console.log("saved settings: ", options);
 	return;
 }
 
 async function loadSettings() {
-	let settings = await chrome.storage.sync.get("tweakOptions");
+	let settings = await chrome.storage.local.get("tweakOptions");
 	if (settings.tweakOptions == null || settings.tweakOptions == undefined) {
 		await storeSettings();
 		// we dont need to send, because we just stored the default settings
 		// (everything is disabled)
 	} else {
 		options = settings.tweakOptions;
-		await sendSettings();
+		sendSettings();
 	}
 	return;
 }
