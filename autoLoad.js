@@ -14,14 +14,14 @@ window.onload = async function () {
 //Stores courses and user in chrome storage
 async function loadCourses() {
 	courses = [];
-	var token = await loadToken();
+
+	const token = await loadToken();
+
+	if (!token) return false;
 
 	console.log("loading courses with token: " + token);
-	if (token == "" || token == null || token == undefined) {
-		return false;
-	}
 
-	var user = await fetch("https://canvas.ucsc.edu/api/v1/users/self", {
+	let user = await fetch("https://canvas.ucsc.edu/api/v1/users/self", {
 		headers: {
 			//headers for authorization (token)
 			Accept: "application/json",
@@ -35,7 +35,7 @@ async function loadCourses() {
 		return false;
 	}
 
-	var enrollments = await fetch(
+	let enrollments = await fetch(
 		"https://canvas.ucsc.edu/api/v1/users/" + user.id + "/enrollments",
 		{
 			headers: {
@@ -46,61 +46,53 @@ async function loadCourses() {
 		}
 	).then((response) => response.json());
 
-	var base = "https://canvas.ucsc.edu/api/v1/"; //base url for canvas api
-	await fetch(
-		base + "courses" + "?per_page=100&include[]=concluded&include[]=favorites", //fetch all courses
+	const base = "https://canvas.ucsc.edu/api/v1";
+
+	let courseList = await fetch(
+		`${base}/courses?per_page=100&include[]=concluded&include[]=favorites`,
 		{
 			headers: {
 				Accept: "application/json",
 				Authorization: "Bearer " + token,
 			},
 		}
-	)
-		.then((response) => response.json())
-		.then(async (data) => {
-			if (data.errors && data.errors.length > 0) {
-				toast("Error loading courses. Probably a bad token...");
-				return false;
-			}
-			for (let i = 0; i < data.length; i++) {
-				if (data[i].concluded == false && data[i].is_favorite == true) {
-					courses.push(data[i]);
-				}
-			}
-			//courses now contains all active courses
-			for (let i = 0; i < courses.length; i++) {
-				courses[i].assignments = [];
-				//get grade for each course
-				for (let j = 0; j < enrollments.length; j++) {
-					if (enrollments[j].course_id == courses[i].id) {
-						courses[i].grade = enrollments[j].grades.current_score;
-					}
-				}
-				await fetch(base + "courses/" + courses[i].id + "/assignments", {
-					headers: {
-						//headers for authorization (token)
-						Accept: "application/json",
-						Authorization: "Bearer " + token,
-					},
-				})
-					.then((response) => response.json())
-					.then((data) => {
-						//assignments have been fetched and converted to JSON
-						for (let j = 0; j < data.length; j++) {
-							//push all assignments to their respective course
-							courses[i].assignments.push(data[j]);
-						}
-					});
-			}
-			//save courses to storage
-			await chrome.storage.sync.set({ courses: courses }, function () {
-				console.log("saved courses: ", courses);
-			});
-			// save user to storage
-			await chrome.storage.sync.set({ user: user }, function () {
-				console.log("saved user: ", user);
-			});
-		});
+	).then((response) => response.json())
+
+	if (courseList.errors && courseList.errors.length > 0) {
+		toast("Error loading courses. Probably a bad token...");
+		return false;
+	}
+
+	courses = courseList.filter(course => course.concluded == false);
+
+	for (let course of courses) {
+		course.assignments = [];
+
+		let currentCourseEnrollment = enrollments.find(enrollment => enrollment.course_id == course.id);
+
+		course.grade = currentCourseEnrollment.grades.current_score;
+
+		let currCourseAssignments = await fetch(`${base}/courses/${course.id}/assignments`, {
+			headers: {
+				//headers for authorization (token)
+				Accept: "application/json",
+				Authorization: "Bearer " + token,
+			},
+
+		}).then((response) => response.json())
+
+		course.assignments = currCourseAssignments;
+	}
+
+	await chrome.storage.sync.set({ courses: courses }, () => {
+		console.log("saved courses: ", courses)
+	});
+	// save user to storage
+	await chrome.storage.sync.set({ user: user }, ()=> {
+		console.log("saved user: ", user);
+	});
+	
+
 	console.log("courses set in autoload: ", courses);
 	return courses;
 }

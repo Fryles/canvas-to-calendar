@@ -158,7 +158,7 @@ function createEvents () {
 }
 */
 // Takes an event and inserts it into Google Calendar.
-function insertEvent(aEvent) {	
+function insertEvent(aEvent) {
 	// Get access token to setup initialization for API request.	
 	chrome.identity.getAuthToken({'interactive' : true}, function(token) {
 		// Initializes the API request.
