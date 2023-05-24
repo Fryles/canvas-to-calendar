@@ -76,7 +76,7 @@ async function loadCourses() {
 						courses[i].grade = enrollments[j].grades.current_score;
 					}
 				}
-				fetch(base + "courses/" + courses[i].id + "/assignments", {
+				await fetch(base + "courses/" + courses[i].id + "/assignments", {
 					headers: {
 						//headers for authorization (token)
 						Accept: "application/json",
@@ -166,7 +166,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function refreshResponseHelper(sendResponse) {
-	let c = await loadCourses();
+	let c =  await loadCourses();
+
 	console.log("SENDING: ", c);
 	sendResponse({ courses: c });
 }
