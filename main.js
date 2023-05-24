@@ -149,6 +149,7 @@ function showToast() {
 	setTimeout(function() {
 	  toastContainer.remove();
 	}, 3000);
+}
 
 function getHelp() {
 	chrome.tabs.create({
@@ -159,3 +160,5 @@ function getHelp() {
 async function getCourses() {
 	return await chrome.storage.sync.get("courses").courses;
 }
+
+
