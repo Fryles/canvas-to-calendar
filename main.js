@@ -150,6 +150,7 @@ function showToast() {
 	  toastContainer.remove();
 	}, 3000);
 }
+
 function getHelp() {
 	chrome.tabs.create({
 		url: "https://github.com/Fryles/canvas-to-calendar#readme",
