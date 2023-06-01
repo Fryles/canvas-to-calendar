@@ -7,6 +7,7 @@
 		<h1 id="c2cHeading"> Welcome to C2C</h1>
 <div class="container">
 	<button id="scrapeBtn">Refresh Assignments</button>
+	<button id="uniqueBtn">Create Event</button>
 	<button id="asgnmBtn">Select Assignments</button><br>
 	<label id="floatingInputLabel">Canvas API Token:</label>
 	<input type="userAPI" class="form-control" id="floatingInput" placeholder="Enter API key here">
@@ -22,8 +23,16 @@
 	<li>Generate a new access token and copy the whole key after the "~" </li>
 	<li>Copy and paste this key into the input box</li>
 	<h2>All done!</h2>
-
   </div>
+<div class="event invisible">
+	<h1>Create a Unique Event in your Calendar!</h1>
+	<input type="eventName" class="form-control" id="floatingInput" placeholder="Enter Event Name Here">
+	<input type="eventDate" class="form-control" id="floatingInput" placeholder="Enter Event Date Here">
+	<button id="injectBtn">Send to my Calendar</button>
+</div>
+<div class ="dropdown invisible">
+	<h1>Select Assignments to add to your Calendar!</h1>
+</div>
 		<script src="./main.js" type="module"></script>
 	</body>
 </html>
