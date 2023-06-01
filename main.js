@@ -217,9 +217,7 @@ function showDropdown() {
 	heading.classList.add("invisible");
 	if (container.classList.contains("invisible") && footer.classList.contains("invisible")) {
 
-		console.log("containers invisible");
-
-		dropdown.classList.remove("invisible"); // Show the instruction element
+		dropdown.classList.remove("invisible"); // Show the dropdown element
 		var closeBtn = document.createElement("button");
 		closeBtn.id = "closeBtn";
 		closeBtn.innerHTML = "X";
