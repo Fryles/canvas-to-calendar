@@ -1,27 +1,90 @@
 <html>
 <body>
-<INPUT TYPE="button" NAME="create" VALUE="Generate List" onClick="createDDL([1, 2, 3, 4])"/>
-<INPUT TYPE="button" NAME="remove" VALUE="Remove From List" onClick="removeFromDDL()"/>
-<select id="assList">
-<option></option>
-</select>
-
-
-
+<p>
+    <button id="generateDropdown">Load Assignments</button>
+    <button id="selUnsel"> Select/Unselect All </button>
+    <button id="delAssignments">Remove Selected Assignments</button>
+</p>
+<div id = "checkboxes"></div>
 <script>
-    function createDDL(options){
-        var select = document.getElementById("assList");
-        for(var i = 0; i < options.length; i++) {
-            var opt = options[i];
-            var el = document.createElement("option");
-            el.textContent = opt;
-            el.value = opt;
-            select.appendChild(el);
+var arr = [['code1', 'descp1', 'id1', 'start1', 'end1'], ['code2', 'descp2', 'id2', 'start2', 'end2'], ['code3', 'descp3', 'id3', 'start3', 'end3']];//replace arr with assignments array in main.js
+
+
+
+window.onload = function () {
+  const genBtn = document.querySelector("#generateDropdown");
+	genBtn.addEventListener("click", async () => {
+		generateDropdown(arr);
+  });
+
+  const delBtn = document.querySelector("#delAssignments");
+	delBtn.addEventListener("click", async () => {
+		deleteAssignments(arr);
+  });
+};
+
+function generateDropdown(arr){//replace arr with assignments array in main.js
+    arr.forEach(assignment => {
+        const id = `${assignment[1]}`
+
+        const label = document.createElement('label');
+        label.setAttribute("assignment", id)
+
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.name = "assignment";
+        checkbox.value = assignment[1];
+        checkbox.id = id;
+
+        label.appendChild(document.createTextNode(assignment[1]));
+        document.querySelector("#checkboxes").appendChild(label);
+        label.appendChild(checkbox);
+    });
+}
+
+
+function deleteAssignments(arr){//replace arr with assignments array in main.js
+    var new_dropdown = arr
+    let checkboxes = document.querySelectorAll('input[name="assignment"]:checked');
+    checkboxes.forEach((checkbox) => {
+        new_dropdown = deleteFromArray(new_dropdown, checkbox.id);
+    });
+}
+
+function deleteFromArray(arr, id){//replace arr with assignments array in main.js
+    var new_arr = arr;
+    console.log(id);
+    for(var i = 0; i < arr.length; i++){
+        console.log(new_arr[i]);
+        if(new_arr[i].includes(id)){
+            new_arr.splice(i, 1);
+            break;
         }
     }
-    function removeFromDDL(){
-        document.getElementById("assList").options[0] = null;
-    }
+    console.log(new_arr);
+    return new_arr;
+}
+
+function check(checked = true) {
+  const checkboxes = document.querySelectorAll('input[name="assignment"]');
+  checkboxes.forEach((checkbox) => {
+    checkbox.checked = checked;
+  });
+}
+
+const btn = document.querySelector('#selUnsel');
+btn.onclick = checkAll;
+
+function checkAll() {
+  check();
+  this.onclick = uncheckAll;
+}
+
+function uncheckAll() {
+  check(false);
+  this.onclick = checkAll;
+}
+
 </script>
 </body>
 </html>
