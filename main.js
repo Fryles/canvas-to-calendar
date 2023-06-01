@@ -59,6 +59,12 @@ window.onload = function () {
 	const helpBtn = document.querySelector("#helpBtn");
 	helpBtn.addEventListener("click", showInstructions);
 
+	const eventBtn = document.querySelector('#uniqueBtn');
+	uniqueBtn.addEventListener("click", showUniqueEventMenu);
+
+	const dropdownBtn = document.querySelector('#asgnmBtn');
+	asgnmBtn.addEventListener("click", showDropdown);
+	
 	//toast for api storage
 	document
 		.getElementById("floatingInput")
@@ -159,7 +165,7 @@ function showInstructions() {
 function showUniqueEventMenu(){
 	const container = document.querySelector(".container");
 	const footer = document.querySelector(".footer");
-	const unique = document.querySelector(".events");
+	const events = document.querySelector(".event");
 	const heading = document.getElementById("c2cHeading");
 
 	container.classList.toggle("invisible");
@@ -167,9 +173,53 @@ function showUniqueEventMenu(){
 	heading.classList.add("invisible");
 
 	if (container.classList.contains("invisible") && footer.classList.contains("invisible")) {
+		console.log("event menu is shown");
+
+		events.classList.remove("invisible"); // Show the events element
+		var closeBtn = document.createElement("button");
+		closeBtn.id = "closeBtn";
+		closeBtn.innerHTML = "X";
+		closeBtn.style.width = "30px";
+		closeBtn.style.height = "30px";
+		closeBtn.style.position = "absolute";
+		closeBtn.style.top = "6px";
+		closeBtn.style.right = "6px";
+		closeBtn.style.borderRadius = "50%";
+		closeBtn.style.backgroundColor = "rgba(#6485c4,0.5)";
+		closeBtn.style.color = "White";
+		closeBtn.style.fontSize = "20px";
+		closeBtn.style.borderStyle = "solid";
+		closeBtn.style.borderColor = "#6485c4";
+		closeBtn.style.fontFamily = "sans-serif";
+		closeBtn.style.cursor = "pointer";
+
+		closeBtn.addEventListener("click", () => {
+			console.log("am i getting here");
+			container.classList.toggle("invisible");
+			footer.classList.toggle("invisible");
+			events.classList.toggle("invisible");
+			heading.classList.remove("invisible");
+		});
+		events.appendChild(closeBtn);
+	} else {
+		events.classList.add("invisible"); // Hide the events element
+	}
+}
+
+function showDropdown() {
+	const container = document.querySelector(".container");
+	const footer = document.querySelector(".footer");
+	const dropdown = document.querySelector(".dropdown");
+	const heading = document.getElementById("c2cHeading");
+
+	container.classList.toggle("invisible");
+	footer.classList.toggle("invisible");
+	heading.classList.add("invisible");
+	if (container.classList.contains("invisible") && footer.classList.contains("invisible")) {
+
 		console.log("containers invisible");
 
-		instruction.classList.remove("events"); // Show the events element
+		dropdown.classList.remove("invisible"); // Show the instruction element
 		var closeBtn = document.createElement("button");
 		closeBtn.id = "closeBtn";
 		closeBtn.innerHTML = "X";
@@ -190,14 +240,15 @@ function showUniqueEventMenu(){
 		closeBtn.addEventListener("click", () => {
 			container.classList.toggle("invisible");
 			footer.classList.toggle("invisible");
-			events.classList.toggle("invisible");
+			dropdown.classList.toggle("invisible");
 			heading.classList.remove("invisible");
 		});
-		instruction.appendChild(closeBtn);
+		dropdown.appendChild(closeBtn);
 	} else {
-		events.classList.add("invisible"); // Hide the events element
+		dropdown.classList.add("invisible"); // Hide the instruction element
 	}
 }
+
 function showToast() {
 	const toastContainer = document.createElement("div");
 	toastContainer.className = "toast-container";
