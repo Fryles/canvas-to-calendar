@@ -46,6 +46,12 @@ window.onload = function () {
 		if (e.keyCode == 13) {
 			// if user presses enter
 			let token = tokenInput.value;
+			if (token.length !== 64){
+				invalidInput();
+			}
+			else{
+				showToast();
+			}
 			await storeToken(token);
 			refreshCourses();
 		}
@@ -55,25 +61,18 @@ window.onload = function () {
 	const aboutBtn = document.querySelector("#aboutBtn");
 	aboutBtn.addEventListener("click", redirectAbout);
 
-	//hide container and show directions in place
+	// hide container and show directions in place
 	const helpBtn = document.querySelector("#helpBtn");
 	helpBtn.addEventListener("click", showInstructions);
 
+	// hide container and show unique menu in place
 	const eventBtn = document.querySelector('#uniqueBtn');
 	uniqueBtn.addEventListener("click", showUniqueEventMenu);
 
+	// hide container and show dropdown menu and etc in place
 	const dropdownBtn = document.querySelector('#asgnmBtn');
 	asgnmBtn.addEventListener("click", showDropdown);
-	
-	//toast for api storage
-	document
-		.getElementById("floatingInput")
-		.addEventListener("keyup", function (event) {
-			if (event.key === "Enter") {
-				event.preventDefault();
-				showToast();
-			}
-		});
+
 }; //end window.onload
 
 // FUNCTIONS
@@ -254,6 +253,22 @@ function showToast() {
 	var toast = document.createElement("div");
 	toast.className = "toast";
 	toast.innerHTML = "User API key saved!";
+
+	toastContainer.appendChild(toast);
+	document.body.appendChild(toastContainer);
+
+	setTimeout(function () {
+		toastContainer.remove();
+	}, 3000);
+}
+
+function invalidInput(){
+	const toastContainer = document.createElement("div");
+	toastContainer.className = "toast-container";
+
+	var toast = document.createElement("div");
+	toast.className = "toast";
+	toast.innerHTML = "Invalid API key!";
 
 	toastContainer.appendChild(toast);
 	document.body.appendChild(toastContainer);
