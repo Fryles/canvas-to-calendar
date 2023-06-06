@@ -362,6 +362,22 @@ async function createTask(aTask, listID) {
 			})
 		});
 	});
+
+	// let token = await getAuthToken();
+	// let init = {
+	// 	method: 'POST',
+	// 	async: true,
+	// 	headers: {
+	// 		Authorization: 'Bearer ' + token,
+	// 		'Content-Type': 'Canvas To Calendar Extension/createTask'
+	// 	},
+	// 	body: JSON.stringify(aTask)
+	// };
+
+	// let url = 'https://tasks.googleapis.com/tasks/v1/lists/' + listID + "/tasks"
+
+	// let response = await fetch(url, init);
+
 }
 
 // Converts the UTC time received from API to local time.
@@ -378,4 +394,9 @@ function getAuthorization() {
 	chrome.identity.getAuthToken({ interactive: true }, function (token) {
 		console.log("got GCal auth: ", token);
 	});
+}
+
+
+async function getAuthToken(){
+	return new Promise(resolve => chrome.identity.getAuthToken({'interactive' : true}, resolve));
 }

@@ -98,11 +98,13 @@ async function loadCourses() {
 				toast("Error loading courses. Probably a bad token...");
 				return false;
 			}
+			
 			for (let i = 0; i < data.length; i++) {
-				if (data[i].concluded == false && data[i].is_favorite == true) {
+				if (data[i].concluded == false) { //got rid of if course is a favorite condition
 					courses.push(data[i]);
 				}
 			}
+			
 			//courses now contains all active courses
 			for (let i = 0; i < courses.length; i++) {
 				courses[i].assignments = [];
@@ -121,6 +123,7 @@ async function loadCourses() {
 				})
 					.then((response) => response.json())
 					.then((data) => {
+						// console.log("data: ", data);
 						//assignments have been fetched and converted to JSON
 						for (let j = 0; j < data.length; j++) {
 							//push all assignments to their respective course
