@@ -232,6 +232,8 @@ async function insertAllTask () {
 			await createTask(task, allList[someCourse].id);
 		}
 	}
+
+	
 }
 
 // This will take extract all the necessary metadata from the courses array, create events with it, and push those events onto allEvents array.
@@ -339,44 +341,23 @@ async function createList (aList) {
 
 // Creates an API request to create a new Task.
 async function createTask(aTask, listID) {
-	return new Promise ((resolved) => {
-		// Get access token to setup intialization for API requestBody.
-		chrome.identity.getAuthToken({'interactive' : true}, function(token) {
-			// Initialize requestBody.
-			let init = {
-				method: 'POST',
-				async: true,
-				headers: {
-					Authorization: 'Bearer ' + token,
-					'Content-Type': 'Canvas To Calendar Extension/createTask'
-				},
-				body: JSON.stringify(aTask)
-			};
+	
+	let token = await getAuthToken();
+	let init = {
+		method: 'POST',
+		async: true,
+		headers: {
+			Authorization: 'Bearer ' + token,
+			'Content-Type': 'Canvas To Calendar Extension/createTask'
+		},
+		body: JSON.stringify(aTask)
+	};
 
-			// Fetch the API request.
-			fetch("https://tasks.googleapis.com/tasks/v1/lists/" + listID + "/tasks", init)
-			.then ((response) => response.json()) // Transform the response to JSON.
-			.then(function(data) {
-				console.log(data);
-				resolved();
-			})
-		});
-	});
+	let url = 'https://tasks.googleapis.com/tasks/v1/lists/' + listID + "/tasks"
 
-	// let token = await getAuthToken();
-	// let init = {
-	// 	method: 'POST',
-	// 	async: true,
-	// 	headers: {
-	// 		Authorization: 'Bearer ' + token,
-	// 		'Content-Type': 'Canvas To Calendar Extension/createTask'
-	// 	},
-	// 	body: JSON.stringify(aTask)
-	// };
+	let response = await fetch(url, init);
 
-	// let url = 'https://tasks.googleapis.com/tasks/v1/lists/' + listID + "/tasks"
 
-	// let response = await fetch(url, init);
 
 }
 
