@@ -140,7 +140,11 @@ input:not([type="checkbox"]):hover {
 	float: right;
 }
 
-.custom-date-input::-webkit-calendar-picker-indicator {
+
+.custom-date-input{
 	font-family: Arial, Helvetica, sans-serif;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator {
 	filter: invert(100%);
 }
