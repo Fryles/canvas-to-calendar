@@ -30,8 +30,7 @@ window.onload = function () {
 	scrapeBtn.addEventListener("click", async () => {
 		await refreshCourses();
 		console.log("All active Canvas Courses: ", courses);
-
-		// Temporary placement, but it works
+		courses = deleteFromArray(courses, getBlacklistAssignments(courses));
 		await insertAllTask();
 		console.log("All the Task List: ", allList);
 		console.log("All the Task: ", allTask);
@@ -68,12 +67,6 @@ window.onload = function () {
 			target: { tabId: tabId },
 			files: ["./tweaks.js"],
 		});
-	});
-
-	const delBtn = document.querySelector("#delAssignments");
-	delBtn.addEventListener("click", async () => {
-		courses = deleteFromArray(courses, getBlacklistAssignments(courses));
-		console.log(courses);
 	});
 
 	//redirect user to github repo
@@ -589,6 +582,7 @@ function generateDropdown(arr) {
 			label.appendChild(checkbox);
 		}
 	}
+	check();
 	showCheckboxes();
 }
 var expanded = false;
@@ -608,7 +602,7 @@ function getBlacklistAssignments(arr) {
 	//replace arr with assignments array in main.js
 	var returnArr = [];
 	let checkboxes = document.querySelectorAll(
-		'input[name="assignment"]:checked'
+		'input[name="assignment"]:not(:checked)'
 	);
 	checkboxes.forEach((checkbox) => {
 		returnArr.push(checkbox.id);
@@ -623,7 +617,7 @@ function deleteFromArray(arr, remove) {
 			for (var assign = 0; assign < arr[course].assignments.length; assign++) {
 				var rem = arr[course].assignments[assign].name;
 				if (rem == remove[id]) {
-					arr[course].splice(assign, 1);
+					arr[course].assignments.splice(assign, 1);
 					break;
 				}
 			}
@@ -638,9 +632,8 @@ function check(checked = true) {
 		checkbox.checked = checked;
 	});
 }
-
 const btn = document.querySelector("#selUnsel");
-btn.onclick = checkAll;
+btn.onclick = uncheckAll;
 
 function checkAll() {
 	check();
