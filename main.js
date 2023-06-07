@@ -264,6 +264,8 @@ function showDropdown() {
 			footer.classList.toggle("invisible");
 			dropdown.classList.toggle("invisible");
 			heading.classList.remove("invisible");
+			const htmlElement = document.documentElement;
+			htmlElement.style.height = 'fit-content';
 		});
 		dropdown.appendChild(closeBtn);
 	} else {
