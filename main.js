@@ -615,17 +615,18 @@ function deleteAssignments(arr) {
 	});
 	return returnArr;
 }
-function deleteFromArray(arr, id) {
-	//replace arr with assignments array in main.js
-	for (var i = 0; i < arr.length; i++) {
-		for (var j = 0; j < arr[i].assignments.length; j++) {
-			var val = courses[i].assignments[j].name;
-			if (val == id) {
-				console.log(val);
-				arr[i].splice(j, 1);
-				break;
-			}
-		}
+function deleteFromArray(arr, remove){//replace arr with assignments array in main.js
+	for(int id = 0; id < remove.length; id++){
+		for(var course = 0; course < arr.length; course++){
+			for(var assign = 0; assign < arr[course].assignments.length; assign++){
+				var rem = arr[course].assignments[assign].name;
+				if(rem == remove[id]){
+					console.log(val);
+        				arr[course].splice(assign, 1);
+        				break;
+      				}
+    			}
+  		}
 	}
 	return arr;
 }
