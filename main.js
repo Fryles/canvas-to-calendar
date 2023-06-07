@@ -91,8 +91,10 @@ window.onload = function () {
 
 // FUNCTIONS
 
-//send message to autoLoad to load courses
-//This function is ASYNC so courses wont be loaded immediately
+/**
+ * Sets global courses variable to the courses array from the autoload.js
+ * @return {Boolean}    Returns true if courses is not undefined and false if it is undefined
+ */
 async function refreshCourses() {
 	return new Promise((resolved) => {
 		chrome.tabs.sendMessage(
@@ -114,29 +116,43 @@ async function refreshCourses() {
 	});
 }
 
+/**
+ * Stores token in local chrome storage.
+ * @param  {String} token  64 char canvas API token
+ * @return {Boolean}       Returns true when token is stored
+ */
 async function storeToken(token) {
 	await chrome.storage.local.set({ token: token });
 	console.log("saved token: ", token);
+	return true;
 }
 
+/**
+ * Queries chrome storage for token, if found, sets placeholder text to token.
+ * @return {String}    Returns token if found, else returns null
+ */
 async function loadToken() {
 	var t = await chrome.storage.local.get("token");
 	console.log("loaded token: ", t.token);
 	if (t.token == "" || t.token == null || t.token == undefined) {
-		return;
+		return null;
 	}
 	document.querySelector("#floatingInput").placeholder = t.token;
 	return t.token;
 }
 
-//creates new chrome tab and redirects user to specified link
+/**
+ Redirects user to github repo README
+ */
 function redirectAbout() {
 	chrome.tabs.create({
 		url: "https://github.com/Fryles/canvas-to-calendar#readme",
 	});
 }
 
-//toggles display css property on all containers
+/**
+ * toggles instruction/main page display on and off
+ */
 function showInstructions() {
 	const container = document.querySelector(".container");
 	const footer = document.querySelector(".footer");
@@ -182,6 +198,9 @@ function showInstructions() {
 	}
 }
 
+/**
+ * toggles unique event menu display on and off
+ */
 function showUniqueEventMenu() {
 	const container = document.querySelector(".container");
 	const footer = document.querySelector(".footer");
@@ -229,6 +248,10 @@ function showUniqueEventMenu() {
 	}
 }
 
+/**
+ * toggles dropdown menu display on and off
+ * generates dropdown menu if it has not been generated yet
+ */
 function showDropdown() {
 	const container = document.querySelector(".container");
 	const footer = document.querySelector(".footer");
@@ -282,6 +305,10 @@ function showDropdown() {
 	}
 }
 
+/**
+ * Displays a toast message for 3 seconds
+ * @param {String} contents The message to be displayed in the toast
+ */
 function showToast(contents) {
 	const toastContainer = document.createElement("div");
 	toastContainer.className = "toast-container";
@@ -304,6 +331,10 @@ function getHelp() {
 	});
 }
 
+/**
+ * Gets the courses array from chrome storage DOES NOT REFRESH
+ * @returns {Array} Returns the courses array from chrome storage
+ */
 async function getCourses() {
 	return (await chrome.storage.local.get("courses")).courses;
 }
