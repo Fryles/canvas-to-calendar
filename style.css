@@ -123,15 +123,16 @@ input:not([type="checkbox"]):hover {
 
 #selUnsel {
 	font-size: 1rem;
-	left: 30%;
 	position: relative;
-	margin-bottom: 0.3rem;
+	left: 50%;
+	-ms-transform: translate(-50%, 0);
+	transform: translate(-50%, 0);
+	margin-bottom: 0.7rem;
 }
 
 .checkInput {
 	vertical-align: middle;
 	float: right;
-	
 }
 
 .custom-date-input {
