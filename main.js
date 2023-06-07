@@ -9,6 +9,7 @@ var allList = [];
 // Array of Task, all the assignments of each course.
 var allTask = [];
 
+
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 	var tab = tabs[0];
 	tabId = tab.id;
@@ -33,6 +34,7 @@ window.onload = function () {
 		await insertAllTask();
 		console.log("All the Task List: ", allList);
 		console.log("All the Task: ", allTask);
+
 	});
 
 	const tokenInput = document.querySelector("#floatingInput");
@@ -52,6 +54,7 @@ window.onload = function () {
 		}
 	});
 
+
 	// Functionality for Send To Calendar button.
 	const sendCalendar = document.querySelector("#injectBtn");
 	sendCalendar.addEventListener("click", async () => {
@@ -61,6 +64,15 @@ window.onload = function () {
 
 		await insertUniqueTask(taskName.value, taskDate.value);
 	});
+  
+	const tweakBtn = document.querySelector("#tweaksBtn");
+	tweakBtn.addEventListener("click", async () => {
+		chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			files: ["./tweaks.js"],
+		});
+
+
 
 	//redirect user to github repo
 	const aboutBtn = document.querySelector("#aboutBtn");
@@ -303,7 +315,7 @@ async function insertAllTask () {
 		let taskList = {
 			'title': courses[someCourse].course_code		
 		};
-
+    
 		// Check if the Task List does not exist, if so then create the Task List.
 		if(!taskListDuplicate(taskList)) {
 			await createList(taskList);
@@ -392,6 +404,7 @@ async function insertUniqueTask (name, date) {
 		}
 	}
 }
+
 
 // Creates an API request to create a new Task List.
 async function createList (aList) {
@@ -523,79 +536,73 @@ function getAuthorization() {
 	});
 }
 
-////////// OLD GOOGLE CALENDAR API CODE ////////// 
-// This will take extract all the necessary metadata from the courses array, create events with it, and push those events onto allEvents array.
-/*function createEvents () {
-	for (let someCourse = 0; someCourse < courses.length; someCourse++) {
-		let courseCode = courses[someCourse].course_code;
-		for (
-			let anAssignment = 0;
-			anAssignment < courses[someCourse].assignments.length;
-			anAssignment++
-		) {
-			let startTime = courses[someCourse].assignments[anAssignment].unlock_at;
-			// Checks if there's an actual start time.
-			if (startTime == null) {
-				startTime = courses[someCourse].assignments[anAssignment].created_at;
-			}
 
-			// Initialize the event with the needed metadata
-			let event = {
-				summary:
-					courses[someCourse].assignments[anAssignment].name +
-					" (" +
-					courseCode +
-					")",
-				description:
-					"Assignment Link: " +
-					courses[someCourse].assignments[anAssignment].html_url +
-					"\n" +
-					courses[someCourse].assignments[anAssignment].description,
-				start: {
-					dateTime: startTime,
-					timeZone: courses[someCourse].time_zone,
-				},
-				end: {
-					dateTime: courses[someCourse].assignments[anAssignment].due_at,
-					timeZone: courses[someCourse].time_zone,
-				},
-				reminders: {
-					useDefault: false,
-				},
-			};
-
-			// Push this event to our allEvents array
-			allEvents.push(event);
-		}
-	}
-}
-
-// Takes an event and inserts it into Google Calendar.
-/*async function insertEvent(aEvent) {	
+// Creates an API request to create a new Task List.
+async function createList (aList) {
 	return new Promise((resolved) => {
-		// Get access token to setup initialization for API request.
-		chrome.identity.getAuthToken({ interactive: true }, function (token) {
-			// Initializes the API request.
+		// Get access token to setup intialization for API requestBody.
+		chrome.identity.getAuthToken({'interactive' : true}, function(token) {
+			// Initialize requestBody.
 			let init = {
-				method: "POST",
+				method: 'POST',
 				async: true,
 				headers: {
-					Authorization: "Bearer " + token,
-					"Content-Type": "application/json",
+					Authorization: 'Bearer ' + token,
+					'Content-Type': 'Canvas To Calendar Extension/createList'
 				},
-				body: JSON.stringify(aEvent),
+				body: JSON.stringify(aList)
 			};
 
-			// Fetches the API request.
-			fetch(
-				"https://www.googleapis.com/calendar/v3/calendars/primary/events",
-				init
-			)
-				.then((response) => response.json()) // Transform the data into json
-				.then(function (data) {
-					console.log(data);
-					resolved();
-				});
+			// Fetched the API request.
+			fetch("https://tasks.googleapis.com/tasks/v1/users/@me/lists", init)
+			.then((response) => response.json()) // Transform the response to JSON.
+			.then(function(data) {
+				allList.push(data);
+				resolved();
+			})
 		});
 	});
-}*/
+}
+
+// Creates an API request to create a new Task.
+async function createTask(aTask, listID) {
+	return new Promise ((resolved) => {
+		// Get access token to setup intialization for API requestBody.
+		chrome.identity.getAuthToken({'interactive' : true}, function(token) {
+			// Initialize requestBody.
+			let init = {
+				method: 'POST',
+				async: true,
+				headers: {
+					Authorization: 'Bearer ' + token,
+					'Content-Type': 'Canvas To Calendar Extension/createTask'
+				},
+				body: JSON.stringify(aTask)
+			};
+
+			// Fetch the API request.
+			fetch("https://tasks.googleapis.com/tasks/v1/lists/" + listID + "/tasks", init)
+			.then ((response) => response.json()) // Transform the response to JSON.
+			.then(function(data) {
+				console.log(data);
+				resolved();
+			})
+		});
+	});
+}
+
+// Converts the UTC time received from API to local time.
+function convertTime (date) {
+	let offSet = new Date(date).getTimezoneOffset();
+	let time = new Date(date).getTime();
+	var newDate = new Date((time - (offSet * 60 * 1000)));
+    newDate = newDate.toISOString();
+	return newDate;   
+}
+
+// Get intial authorization to access User's private Calendar data.
+function getAuthorization() {
+	chrome.identity.getAuthToken({ interactive: true }, function (token) {
+		console.log("got GCal auth: ", token);
+	});
+}

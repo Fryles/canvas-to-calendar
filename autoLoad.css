@@ -1,3 +1,54 @@
+#overlay {
+	background-color: #2327476e;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+	width: 100%;
+	height: 10%;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#overlay button {
+	align-items: center;
+	background-color: #252b46;
+	border-radius: 4px;
+	border-color: #6485c4;
+	border-width: 3px;
+	border-style: solid;
+	color: #fff;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: inline-flex;
+	font-size: 1.1rem;
+	justify-content: center;
+	margin-bottom: 1.2rem;
+	margin: 0.3rem;
+	outline: none;
+	padding: 0.5rem;
+	text-align: center;
+	text-decoration: none;
+	transition: box-shadow 0.2s, -webkit-box-shadow 0.2s;
+}
+
+#overlay button:hover {
+	box-shadow: #6485c4 0 0 0 4px;
+}
+
+#overlay #closeBtn {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0.5rem;
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+}
+
 #toast {
 	visibility: hidden;
 	min-width: 250px; /* Set a default minimum width */
@@ -12,7 +63,6 @@
 	left: 50%; /* Center the toast */
 	bottom: 30px;
 }
-
 
 #snackbar.show {
 	visibility: visible;

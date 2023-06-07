@@ -1,13 +1,49 @@
 //Runs automatically on canvas page load
-
 console.log("autoLoad is... loaded");
+quickApply();
 //courses is global so it can be accessed by setGradesOnDash()
 var courses;
+var options = {
+	zenMode: false,
+	darkMode: false,
+	removeWatermark: false,
+	showGrades: false,
+};
+
+//listen for message from tweaks menu
+chrome.runtime.onMessage.addListener(async function (
+	request,
+	sender,
+	sendResponse
+) {
+	if (request.action === "loadSettings") {
+		let options = await loadSettings();
+		applySettings(options);
+		sendResponse({ response: "success" });
+		return true;
+	}
+});
+
+//listen for message from extension popup
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.action === "loadCourses") {
+		refreshResponseHelper(sendResponse);
+	}
+	return true;
+});
+
+// helper function for extension listener
+async function refreshResponseHelper(sendResponse) {
+	let c = await loadCourses();
+
+	console.log("SENDING: ", c);
+	sendResponse({ courses: c });
+}
 
 //we wait to load courses, then wait to load settings, then apply them
 window.onload = async function () {
+	options = await loadSettings();
 	await loadCourses();
-	var options = await loadSettings();
 	applySettings(options);
 };
 
@@ -140,7 +176,7 @@ function applySettings(options) {
 
 // loads courses from chrome storage
 async function getCourses() {
-	return await chrome.storage.local.get("courses").courses;
+	return (await chrome.storage.local.get("courses")).courses;
 }
 
 // loads settings from chrome storage, or sets default settings if none are found
@@ -156,35 +192,6 @@ async function loadSettings() {
 		return retrievedSettings.tweakOptions;
 	}
 }
-
-//listen for message from extension popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.action === "loadCourses") {
-		refreshResponseHelper(sendResponse);
-	}
-	return true;
-});
-
-async function refreshResponseHelper(sendResponse) {
-	let c = await loadCourses();
-
-	console.log("SENDING: ", c);
-	sendResponse({ courses: c });
-}
-
-//listen for message from tweaks menu
-chrome.runtime.onMessage.addListener(async function (
-	request,
-	sender,
-	sendResponse
-) {
-	if (request.action === "loadSettings") {
-		let options = await loadSettings();
-		applySettings(options);
-		sendResponse({ response: "success" });
-		return true;
-	}
-});
 
 function watermark(on) {
 	document.getElementsByClassName("ic-Layout-watermark")[0].style.display = on
@@ -229,7 +236,7 @@ function darkMode(on) {
 		};
 		xhttp.send(null);
 	} else {
-		if (document.getElementById("darkModeStylesheet")) {
+		if (!on && document.getElementById("darkModeStylesheet")) {
 			document.getElementById("darkModeStylesheet").remove();
 		}
 	}
@@ -237,10 +244,6 @@ function darkMode(on) {
 
 async function setGradesOnDash(on) {
 	courses = await getCourses();
-	console.log("Courses used in setting gradesOnDash", courses);
-	if (courses == null || courses == undefined) {
-		return;
-	}
 	if (on) {
 		let courseTitles = document.getElementsByClassName(
 			"ic-DashboardCard__header_content"
@@ -273,10 +276,15 @@ async function setGradesOnDash(on) {
 			}
 		}
 	} else {
-		let grades = document.getElementsByClassName("c2cGrade");
-		for (let i = 0; i < grades.length; i++) {
-			grades[i].remove();
+		while (document.getElementsByClassName("c2cGrade").length > 0) {
+			document.getElementsByClassName("c2cGrade")[0].remove();
 		}
 	}
 	return;
+}
+
+async function quickApply() {
+	var enabled = await loadSettings();
+	darkMode(enabled.darkMode);
+	zenMode(enabled.zenMode);
 }

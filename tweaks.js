@@ -9,7 +9,6 @@ var options = {
 // MAIN
 createOverlay();
 loadSettings();
-var courses = getCourses();
 
 // FUNCTIONS
 async function storeSettings() {
@@ -34,7 +33,7 @@ async function loadSettings() {
 // stores settings in chrome storage, then sends message to content script to apply settings
 async function sendSettings() {
 	await storeSettings();
-	await chrome.runtime.sendMessage({
+	chrome.runtime.sendMessage({
 		action: "loadSettings",
 	});
 }
@@ -42,37 +41,10 @@ async function sendSettings() {
 function createOverlay() {
 	var overlay = document.createElement("div");
 	overlay.id = "overlay";
-	overlay.style.position = "fixed";
-	overlay.style.bottom = "0";
-	overlay.style.left = "0";
-	overlay.style.width = "100%";
-	overlay.style.height = "15%";
-	overlay.style.backgroundColor = "rgba(0,0,0,0.5)";
-	overlay.style.zIndex = "1000";
-	overlay.style.borderTopRightRadius = "10px";
-	overlay.style.borderTopLeftRadius = "10px";
-	overlay.style.display = "flex";
-	overlay.style.justifyContent = "center";
-	overlay.style.alignItems = "center";
-	overlay.style.color = "white";
-	overlay.style.fontSize = "20px";
-	overlay.style.fontFamily = "sans-serif";
+
 	var closeBtn = document.createElement("button");
 	closeBtn.id = "closeBtn";
 	closeBtn.innerHTML = "X";
-	closeBtn.style.width = "30px";
-	closeBtn.style.height = "30px";
-	closeBtn.style.position = "absolute";
-	closeBtn.style.top = "6px";
-	closeBtn.style.right = "6px";
-	closeBtn.style.borderRadius = "50%";
-	closeBtn.style.backgroundColor = "rgba(0,0,0,0.5)";
-	closeBtn.style.color = "white";
-	closeBtn.style.fontSize = "20px";
-	closeBtn.style.borderStyle = "solid";
-	closeBtn.style.borderColor = "white";
-	closeBtn.style.fontFamily = "sans-serif";
-	closeBtn.style.cursor = "pointer";
 
 	closeBtn.addEventListener("click", () => {
 		document.getElementById("overlay").remove();
