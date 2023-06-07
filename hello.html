@@ -6,10 +6,11 @@
 		<img src="/C2Cupdated.png" class="logo">
 		<h1 id="c2cHeading"> Welcome to C2C</h1>
 <div class="container">
-	<button id="scrapeBtn">Refresh Assignments</button>
+	<button id="scrapeBtn">Export Assignments To Calendar</button>
+	<button id="uniqueBtn">Create Task</button>
 	<button id="asgnmBtn">Select Assignments</button><br>
 	<label id="floatingInputLabel">Canvas API Token:</label>
-	<input type="userAPI" class="form-control" id="floatingInput" placeholder="Enter API key here">
+	<input type="text" class="form-control" id="floatingInput" placeholder="Enter API key here">
 	</div>
 <div class="footer">
 		<button id="tweaksBtn">Canvas Tweaks</button>
@@ -23,8 +24,18 @@
 	<li>Generate a new access token and copy the whole key after the "~" </li>
 	<li>Copy and paste this key into the input box</li>
 	<h2>All done!</h2>
-
   </div>
+<div class="event invisible">
+	<h1>Create a Unique Task in your Calendar!</h1>
+	<input type="text" class="form-control" id="nameInput" placeholder="Enter Task Name here">
+	<input type="date" class="form-control custom-date-input" id="dateInput">
+	<button id="injectBtn">Send to my Calendar</button>
+</div>
+<div class ="dropdown invisible">
+	<h2>Select Assignments to add to your Calendar!</h2>
+	<button id="selUnsel"> Select/Unselect All </button>
+  <div id="checkboxes"></div>
+</div>
 		<script src="./main.js" type="module"></script>
 	</body>
 </html>

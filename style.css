@@ -31,7 +31,7 @@ li {
 }
 
 /* keep style consistent for input box with buttons */
-#floatingInput {
+input:not([type="checkbox"]) {
 	cursor: text;
 	width: 80%;
 }
@@ -63,7 +63,7 @@ body {
 }
 /* general button style */
 button,
-#floatingInput {
+input:not([type="checkbox"]) {
 	align-items: center;
 	background-color: #00000000;
 	border-radius: 4px;
@@ -86,10 +86,59 @@ button,
 }
 
 button:hover,
-#floatingInput:hover {
+input:not([type="checkbox"]):hover {
 	box-shadow: #6485c4 0 0 0 4px;
 }
 
 .invisible {
-	display: none;
+	display: none !important;
+}
+
+.dropdown {
+	width: 100%;
+	height: auto;
+}
+
+#checkboxes {
+	display: flex;
+	width: 90%;
+	border: 3px #6485c4 solid;
+	border-radius: 4px;
+	margin: 0 auto;
+	flex-direction: column;
+	align-content: center;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+#checkboxes label {
+	display: inline-block;
+	width: 95%;
+	padding: 0 3%;
+}
+
+#checkboxes label:hover {
+	background-color: #6485c4;
+}
+
+#selUnsel {
+	font-size: 1rem;
+	position: relative;
+	left: 50%;
+	-ms-transform: translate(-50%, 0);
+	transform: translate(-50%, 0);
+	margin-bottom: 0.7rem;
+}
+
+.checkInput {
+	vertical-align: middle;
+	float: right;
+}
+
+.custom-date-input {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator {
+	filter: invert(100%);
 }
