@@ -31,7 +31,7 @@ li {
 }
 
 /* keep style consistent for input box with buttons */
-#floatingInput {
+input {
 	cursor: text;
 	width: 80%;
 }
@@ -63,7 +63,7 @@ body {
 }
 /* general button style */
 button,
-#floatingInput {
+input {
 	align-items: center;
 	background-color: #00000000;
 	border-radius: 4px;
@@ -86,10 +86,43 @@ button,
 }
 
 button:hover,
-#floatingInput:hover {
+input:hover {
 	box-shadow: #6485c4 0 0 0 4px;
 }
 
 .invisible {
 	display: none;
+}
+
+.dropdown {
+  width: 200px;
+}
+
+.opts {
+  position: relative;
+}
+
+.opts select {
+  width: 100%;
+  font-weight: bold;
+}
+
+.overSelect {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+#checkboxes {
+  display: none;
+  border: 1px #dadada solid;
+}
+
+#checkboxes label {
+  display: block;
+}
+
+#checkboxes label:hover {
+  background-color: #1e90ff;
 }
