@@ -72,8 +72,8 @@ window.onload = function () {
 
 	const delBtn = document.querySelector("#delAssignments");
 	delBtn.addEventListener("click", async () => {
-		assignmentsToRemove = deleteAssignments(courses);
-		console.log(assignmentsToRemove);
+		courses = deleteFromArray(courses, getBlacklistAssignments(courses));
+		console.log(courses);
 	});
 
 	//redirect user to github repo
@@ -604,7 +604,7 @@ function showCheckboxes() {
 	}
 }
 
-function deleteAssignments(arr) {
+function getBlacklistAssignments(arr) {
 	//replace arr with assignments array in main.js
 	var returnArr = [];
 	let checkboxes = document.querySelectorAll(
@@ -615,21 +615,23 @@ function deleteAssignments(arr) {
 	});
 	return returnArr;
 }
-function deleteFromArray(arr, remove){//replace arr with assignments array in main.js
-	for(int id = 0; id < remove.length; id++){
-		for(var course = 0; course < arr.length; course++){
-			for(var assign = 0; assign < arr[course].assignments.length; assign++){
+
+function deleteFromArray(arr, remove) {
+	//replace arr with assignments array in main.js
+	for (let id = 0; id < remove.length; id++) {
+		for (var course = 0; course < arr.length; course++) {
+			for (var assign = 0; assign < arr[course].assignments.length; assign++) {
 				var rem = arr[course].assignments[assign].name;
-				if(rem == remove[id]){
-					console.log(val);
-        				arr[course].splice(assign, 1);
-        				break;
-      				}
-    			}
-  		}
+				if (rem == remove[id]) {
+					arr[course].splice(assign, 1);
+					break;
+				}
+			}
+		}
 	}
 	return arr;
 }
+
 function check(checked = true) {
 	const checkboxes = document.querySelectorAll('input[name="assignment"]');
 	checkboxes.forEach((checkbox) => {
