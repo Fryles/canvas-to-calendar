@@ -565,7 +565,6 @@ function getAuthorization() {
 
 function generateDropdown(arr) {
 	//replace arr with assignments array in main.js
-	document.getElementById("generateDropdown").disabled = true;
 	for (var i = 0; i < arr.length; i++) {
 		for (var j = 0; j < arr[i].assignments.length; j++) {
 			var assign = arr[i].assignments[j].name;
@@ -578,6 +577,7 @@ function generateDropdown(arr) {
 			checkbox.name = "assignment";
 			checkbox.value = assign;
 			checkbox.id = id;
+			checkbox.className = "checkInput";
 
 			label.appendChild(document.createTextNode(assign));
 			document.querySelector("#checkboxes").appendChild(label);
@@ -624,7 +624,6 @@ function deleteFromArray(arr, id) {
 	return arr;
 }
 
-//
 function check(checked = true) {
 	const checkboxes = document.querySelectorAll('input[name="assignment"]');
 	checkboxes.forEach((checkbox) => {
