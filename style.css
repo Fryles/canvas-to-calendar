@@ -31,7 +31,7 @@ li {
 }
 
 /* keep style consistent for input box with buttons */
-input {
+input:not([type="checkbox"]) {
 	cursor: text;
 	width: 80%;
 }
@@ -63,7 +63,7 @@ body {
 }
 /* general button style */
 button,
-input {
+input:not([type="checkbox"]) {
 	align-items: center;
 	background-color: #00000000;
 	border-radius: 4px;
@@ -86,7 +86,7 @@ input {
 }
 
 button:hover,
-input:hover {
+input:not([type="checkbox"]):hover {
 	box-shadow: #6485c4 0 0 0 4px;
 }
 
@@ -95,36 +95,40 @@ input:hover {
 }
 
 .dropdown {
-  width: 200px;
+	width: 200px;
 }
 
 .opts {
-  position: relative;
+	position: relative;
 }
 
 .opts select {
-  width: 100%;
-  font-weight: bold;
+	width: 100%;
+	font-weight: bold;
 }
 
 .overSelect {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
 }
 #checkboxes {
-  display: none;
-  border: 1px #dadada solid;
+	display: none;
+	border: 1px #dadada solid;
 }
 
 #checkboxes label {
-  display: block;
+	display: block;
 }
 
 #checkboxes label:hover {
-  background-color: #1e90ff;
+	background-color: #1e90ff;
+}
+
+.checkInput {
+	margin-left: auto;
 }
 
 .custom-date-input::-webkit-calendar-picker-indicator {
