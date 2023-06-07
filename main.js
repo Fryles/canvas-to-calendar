@@ -601,9 +601,12 @@ async function getAuthToken() {
 	);
 }
 
+//creates dropdown with checkboxes of all assignments within courses array.
 function generateDropdown(arr) {
-	for (var i = 0; i < arr.length; i++) {
-		for (var j = 0; j < arr[i].assignments.length; j++) {
+	for (var i = 0; i < arr.length; i++) {//loops through courses in courses array
+		for (var j = 0; j < arr[i].assignments.length; j++) {//loops through assignments for course in courses array
+			
+			//creating dropdown element and appending it to checkboxes div class in hello.html
 			var assign = arr[i].assignments[j].name;
 			const id = `${assign}`;
 			const label = document.createElement("label");
@@ -626,6 +629,7 @@ function generateDropdown(arr) {
 }
 var expanded = false;
 
+//function to show checkboxes
 function showCheckboxes() {
 	var checkboxes = document.getElementById("checkboxes");
 	if (!expanded) {
@@ -637,8 +641,8 @@ function showCheckboxes() {
 	}
 }
 
+//creates array for functions user wants to remove
 function getBlacklistAssignments(arr) {
-	//replace arr with assignments array in main.js
 	var returnArr = [];
 	let checkboxes = document.querySelectorAll(
 		'input[name="assignment"]:not(:checked)'
@@ -649,13 +653,13 @@ function getBlacklistAssignments(arr) {
 	return returnArr;
 }
 
+//delete assignment from courses array
 function deleteFromArray(arr, remove) {
-	//replace arr with assignments array in main.js
-	for (let id = 0; id < remove.length; id++) {
-		for (var course = 0; course < arr.length; course++) {
-			for (var assign = 0; assign < arr[course].assignments.length; assign++) {
+	for (let id = 0; id < remove.length; id++) {//loops through ids to remove
+		for (var course = 0; course < arr.length; course++) {//loops through courses in courses array
+			for (var assign = 0; assign < arr[course].assignments.length; assign++) {//loops through assignments of a course in courses array
 				var rem = arr[course].assignments[assign].name;
-				if (rem == remove[id]) {
+				if (rem == remove[id]) {//if assignment to be removed is in courses array
 					arr[course].assignments.splice(assign, 1);
 					break;
 				}
@@ -665,20 +669,23 @@ function deleteFromArray(arr, remove) {
 	return arr;
 }
 
+//checks if checkbox is checked or not
 function check(checked = true) {
 	const checkboxes = document.querySelectorAll('input[name="assignment"]');
 	checkboxes.forEach((checkbox) => {
 		checkbox.checked = checked;
 	});
 }
+//button to select/unselect all checkboxes
 const btn = document.querySelector("#selUnsel");
 btn.onclick = uncheckAll;
 
+//check all checkboxes
 function checkAll() {
 	check();
 	this.onclick = uncheckAll;
 }
-
+//unchecks all checkboxes
 function uncheckAll() {
 	check(false);
 	this.onclick = checkAll;
