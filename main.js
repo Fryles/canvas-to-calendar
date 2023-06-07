@@ -93,7 +93,7 @@ window.onload = function () {
 	// hide container and show dropdown menu and etc in place
 	const dropdownBtn = document.querySelector("#asgnmBtn");
 	asgnmBtn.addEventListener("click", showDropdown);
-}; //end window.onload
+}); //end window.onload
 
 // FUNCTIONS
 
