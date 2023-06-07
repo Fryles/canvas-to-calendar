@@ -9,6 +9,8 @@ var allList = [];
 // Array of Task, all the assignments of each course.
 var allTask = [];
 
+var assignmentsToRemove = [];
+
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 	var tab = tabs[0];
 	tabId = tab.id;
@@ -75,7 +77,8 @@ window.onload = function () {
 
   	const delBtn = document.querySelector("#delAssignments");
 	delBtn.addEventListener("click", async () => {
-		deleteAssignments(courses);
+		assignmentsToRemove = deleteAssignments(courses);
+		console.log(assignmentsToRemove);
   	});
 
 	//redirect user to github repo
@@ -599,12 +602,13 @@ function showCheckboxes() {
 }
 
 function deleteAssignments(arr){//replace arr with assignments array in main.js
+	var returnArr = []
 	let checkboxes = document.querySelectorAll('input[name="assignment"]:checked');
     	checkboxes.forEach((checkbox) => {
-        	arr = deleteFromArray(arr, checkbox.id);
+        	returnArr.push(checkbox.id);
     	});
+	return returnArr;
 }
-
 function deleteFromArray(arr, id){//replace arr with assignments array in main.js
 	for(var i = 0; i < arr.length; i++){
 		for(var j = 0; j < arr[i].assignments.length; j++){
@@ -618,7 +622,6 @@ function deleteFromArray(arr, id){//replace arr with assignments array in main.j
   	}
   	return arr;
 }
-
 //
 function check(checked = true) {
   	const checkboxes = document.querySelectorAll('input[name="assignment"]');
