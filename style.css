@@ -1,3 +1,7 @@
+html {
+	height: fit-content;
+}
+
 h1 {
 	font-family: Arial, Helvetica, sans-serif;
 	text-align: center;
@@ -97,6 +101,17 @@ input:not([type="checkbox"]):hover {
 .dropdown {
 	width: 100%;
 	height: auto;
+}
+
+.instList {
+	width: 85%;
+	padding-left: 10%;
+	padding-right: 5%;
+}
+
+.toast-container {
+	height: 5%;
+	text-align: center;
 }
 
 #checkboxes {

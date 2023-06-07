@@ -31,7 +31,9 @@ window.onload = function () {
 		await refreshCourses();
 		console.log("All active Canvas Courses: ", courses);
 		courses = deleteFromArray(courses, getBlacklistAssignments(courses));
+		showToast("Exporting to GCal, please wait...");
 		await insertAllTask();
+		showToast("All done exporting!");
 		console.log("All the Task List: ", allList);
 		console.log("All the Task: ", allTask);
 	});
@@ -43,12 +45,12 @@ window.onload = function () {
 			// if user presses enter
 			let token = tokenInput.value;
 			if (token.length !== 64) {
-				invalidInput();
+				showToast("Invalid API key!");
 			} else {
-				showToast();
+				showToast("API key saved!");
+				await storeToken(token);
+				refreshCourses();
 			}
-			await storeToken(token);
-			refreshCourses();
 		}
 	});
 
@@ -99,7 +101,13 @@ async function refreshCourses() {
 			},
 			function (response) {
 				courses = response.courses;
-				resolved();
+				if (courses == undefined) {
+					showToast("Error loading courses, check token.");
+					resolved(false);
+				} else {
+					showToast("Courses loaded!");
+					resolved(true);
+				}
 			}
 		);
 	});
@@ -271,29 +279,13 @@ function showDropdown() {
 	}
 }
 
-function showToast() {
+function showToast(contents) {
 	const toastContainer = document.createElement("div");
 	toastContainer.className = "toast-container";
 
 	var toast = document.createElement("div");
 	toast.className = "toast";
-	toast.innerHTML = "User API key saved!";
-
-	toastContainer.appendChild(toast);
-	document.body.appendChild(toastContainer);
-
-	setTimeout(function () {
-		toastContainer.remove();
-	}, 3000);
-}
-
-function invalidInput() {
-	const toastContainer = document.createElement("div");
-	toastContainer.className = "toast-container";
-
-	var toast = document.createElement("div");
-	toast.className = "toast";
-	toast.innerHTML = "Invalid API key!";
+	toast.innerHTML = contents;
 
 	toastContainer.appendChild(toast);
 	document.body.appendChild(toastContainer);
@@ -559,6 +551,7 @@ function convertTime(date) {
 function getAuthorization() {
 	chrome.identity.getAuthToken({ interactive: true }, function (token) {
 		console.log("got GCal auth: ", token);
+		showToast("Logged in to GCal!");
 	});
 }
 
