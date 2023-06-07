@@ -31,7 +31,7 @@ window.onload = function () {
 		await refreshCourses();
 		console.log("All active Canvas Courses: ", courses);
 		courses = deleteFromArray(courses, getBlacklistAssignments(courses));
-		showToast("Exporting to GCal, please wait...");
+		showToast("Exporting to Google Calendar, please wait...");
 		await insertAllTask();
 		showToast("All done exporting!");
 		console.log("All the Task List: ", allList);
@@ -61,7 +61,7 @@ window.onload = function () {
 		const taskDate = document.querySelector("#dateInput");
 
 		await insertUniqueTask(taskName.value, taskDate.value);
-		showToast(taskName + " added to GCal!");
+		showToast(taskName.value + " added to Google Calendar!");
 	});
 
 	const tweakBtn = document.querySelector("#tweaksBtn");
@@ -590,8 +590,8 @@ function convertTime(date) {
 // Get intial authorization to access User's private Calendar data.
 function getAuthorization() {
 	chrome.identity.getAuthToken({ interactive: true }, function (token) {
-		console.log("got GCal auth: ", token);
-		showToast("Logged in to GCal!");
+		console.log("got Google Calendar auth: ", token);
+		showToast("Logged in to Google Calendar!");
 	});
 }
 
