@@ -98,11 +98,13 @@ async function loadCourses() {
 				toast("Error loading courses. Probably a bad token...");
 				return false;
 			}
+			
 			for (let i = 0; i < data.length; i++) {
-				if (data[i].concluded == false && data[i].is_favorite == true) {
+				if (data[i].concluded == false && data[i].is_favorite == true) { //got rid of if course is a favorite condition
 					courses.push(data[i]);
 				}
 			}
+			
 			//courses now contains all active courses
 			for (let i = 0; i < courses.length; i++) {
 				courses[i].assignments = [];
@@ -121,6 +123,7 @@ async function loadCourses() {
 				})
 					.then((response) => response.json())
 					.then((data) => {
+						// console.log("data: ", data);
 						//assignments have been fetched and converted to JSON
 						for (let j = 0; j < data.length; j++) {
 							//push all assignments to their respective course
@@ -216,30 +219,20 @@ function zenMode(on) {
 	}
 }
 
-function darkMode(on) {
-	if (on && !document.getElementById("darkModeStylesheet")) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.open(
-			"GET",
-			"https://raw.githubusercontent.com/DeGrandis/canvas-dark-mode/master/plugin/css/styles.css",
-			true
-		);
-		xhttp.onreadystatechange = function () {
-			if (xhttp.readyState === 4) {
-				if (xhttp.status === 200) {
-					var link = document.createElement("style");
-					link.innerHTML = xhttp.responseText;
-					link.id = "darkModeStylesheet";
-					document.getElementsByTagName("head")[0].appendChild(link);
-				}
-			}
-		};
-		xhttp.send(null);
-	} else {
-		if (!on && document.getElementById("darkModeStylesheet")) {
-			document.getElementById("darkModeStylesheet").remove();
-		}
+async function darkMode(on) {
+	if (!on && document.getElementById("darkModeStylesheet")){
+		return document.head.removeChild(document.getElementById("darkModeStylesheet"));
 	}
+
+	if (!on) return
+
+	let response = await fetch("https://raw.githubusercontent.com/DeGrandis/canvas-dark-mode/master/plugin/css/styles.css");
+	let css  = await response.text();
+
+	const link = document.createElement("style");
+	link.innerHTML = css;
+	link.id = "darkModeStylesheet";
+	document.head.appendChild(link);
 }
 
 async function setGradesOnDash(on) {

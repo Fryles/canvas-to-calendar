@@ -272,6 +272,8 @@ function showDropdown() {
 			footer.classList.toggle("invisible");
 			dropdown.classList.toggle("invisible");
 			heading.classList.remove("invisible");
+			const htmlElement = document.documentElement;
+			htmlElement.style.height = 'fit-content';
 		});
 		dropdown.appendChild(closeBtn);
 	} else {
@@ -339,7 +341,7 @@ async function insertAllTask() {
 
 			// Check if the assignment is past due.
 			let currentTime = new Date(),
-				status = "needsAction";
+			status = "needsAction";
 			currentTime = currentTime.toISOString();
 			if (dueDate < currentTime) {
 				status = "completed";
@@ -361,6 +363,8 @@ async function insertAllTask() {
 			}
 		}
 	}
+
+	
 }
 
 // Checks to see if taskList already exist in the User's Task List.
@@ -445,38 +449,26 @@ async function createList(aList) {
 	});
 }
 
-// Creates an API request to create a new Task.
-async function createTask(aTask, listID) {
-	return new Promise((resolved) => {
-		// Get access token to setup intialization for API requestBody.
-		chrome.identity.getAuthToken({ interactive: true }, function (token) {
-			// Initialize requestBody.
-			let init = {
-				method: "POST",
-				async: true,
-				headers: {
-					Authorization: "Bearer " + token,
-					"Content-Type": "Canvas To Calendar Extension/createTask",
-				},
-				body: JSON.stringify(aTask),
-			};
-
-			// Fetch the API request.
-			fetch(
-				"https://tasks.googleapis.com/tasks/v1/lists/" + listID + "/tasks",
-				init
-			)
-				.then((response) => response.json()) // Transform the response to JSON.
-				.then(function (data) {
-					console.log(data);
-					resolved();
-				});
-		});
-	});
-}
-
 // Creates an API request to get all of User's current Task List.
 async function getAllTaskList() {
+	let token  =  await getAuthToken(); //wait for the token
+	let init = {
+		method: "GET",
+		async: true,
+		headers: {
+			Authorization: "Bearer " + token,
+			"Content-Type": "Canvas To Calendar Extension/getAllTaskList",
+		},
+	};
+
+	let url = 'https://tasks.googleapis.com/tasks/v1/users/@me/lists';
+	let response = await fetch(url, init);
+	let data = await response.json();
+
+	allList = data.items;
+
+	allList.shift();
+
 	return new Promise((resolved) => {
 		// Get access token to setup intialization for API requestBody.
 		chrome.identity.getAuthToken({ interactive: true }, function (token) {
@@ -503,6 +495,25 @@ async function getAllTaskList() {
 				});
 		});
 	});
+}
+
+// Creates an API request to create a new Task.
+async function createTask(aTask, listID) {
+
+	let token = await getAuthToken();
+	let init = {
+		method: 'POST',
+		async: true,
+		headers: {
+			Authorization: 'Bearer ' + token,
+			'Content-Type': 'Canvas To Calendar Extension/createTask'
+		},
+		body: JSON.stringify(aTask)
+	};
+
+	let url = 'https://tasks.googleapis.com/tasks/v1/lists/' + listID + "/tasks"
+
+	let response = await fetch(url, init);
 }
 
 // Creates an API request to get all of User's current Task within the respective Task List.
@@ -553,6 +564,10 @@ function getAuthorization() {
 		console.log("got GCal auth: ", token);
 		showToast("Logged in to GCal!");
 	});
+}
+
+async function getAuthToken(){
+	return new Promise(resolve => chrome.identity.getAuthToken({'interactive' : true}, resolve));
 }
 
 function generateDropdown(arr) {
