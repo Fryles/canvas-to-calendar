@@ -53,7 +53,6 @@ window.onload = function () {
 		}
 	});
 
-
 	// Functionality for Send To Calendar button.
 	const sendCalendar = document.querySelector("#injectBtn");
 	sendCalendar.addEventListener("click", async () => {
@@ -69,17 +68,19 @@ window.onload = function () {
 			target: { tabId: tabId },
 			files: ["./tweaks.js"],
 		});
+	});
 
 	const genBtn = document.querySelector("#generateDropdown");
 	genBtn.addEventListener("click", async () => {
 		generateDropdown(courses);
 	});
 
-  	const delBtn = document.querySelector("#delAssignments");
+	const delBtn = document.querySelector("#delAssignments");
 	delBtn.addEventListener("click", async () => {
 		assignmentsToRemove = deleteAssignments(courses);
 		console.log(assignmentsToRemove);
   	});
+
 
 	//redirect user to github repo
 	const aboutBtn = document.querySelector("#aboutBtn");
@@ -566,39 +567,40 @@ function getAuthorization() {
 	});
 }
 
-function generateDropdown(arr){//replace arr with assignments array in main.js
-	document.getElementById("generateDropdown").disabled = true;
-    	for(var i = 0; i < arr.length; i++){
-      		for(var j = 0; j < arr[i].assignments.length; j++){
-        		var assign = arr[i].assignments[j].name;
-        		const id = `${assign}`
-        		const label = document.createElement('label');
-        		label.setAttribute("assignment", id)
+function generateDropdown(arr) {
+	//replace arr with assignments array in main.js
+	for (var i = 0; i < arr.length; i++) {
+		for (var j = 0; j < arr[i].assignments.length; j++) {
+			var assign = arr[i].assignments[j].name;
+			const id = `${assign}`;
+			const label = document.createElement("label");
+			label.setAttribute("assignment", id);
 
-        		const checkbox = document.createElement('input');
-        		checkbox.type = "checkbox";
-        		checkbox.name = "assignment";
-        		checkbox.value = assign;
-        		checkbox.id = id;
+			const checkbox = document.createElement("input");
+			checkbox.type = "checkbox";
+			checkbox.name = "assignment";
+			checkbox.value = assign;
+			checkbox.id = id;
+			checkbox.className = "checkInput";
 
-        		label.appendChild(document.createTextNode(assign));
-        		document.querySelector("#checkboxes").appendChild(label);
-        		label.appendChild(checkbox);
-      		}
-    	}
-    	showCheckboxes();
+			label.appendChild(document.createTextNode(assign));
+			document.querySelector("#checkboxes").appendChild(label);
+			label.appendChild(checkbox);
+		}
+	}
+	showCheckboxes();
 }
 var expanded = false;
 
 function showCheckboxes() {
 	var checkboxes = document.getElementById("checkboxes");
-  	if (!expanded) {
-    		checkboxes.style.display = "block";
-    		expanded = true;
-  	} else {
-    		checkboxes.style.display = "none";
-    		expanded = false;
-  	}
+	if (!expanded) {
+		checkboxes.style.display = "block";
+		expanded = true;
+	} else {
+		checkboxes.style.display = "none";
+		expanded = false;
+	}
 }
 
 function deleteAssignments(arr){//replace arr with assignments array in main.js
@@ -613,24 +615,23 @@ function deleteFromArray(arr, id){//replace arr with assignments array in main.j
 	for(var i = 0; i < arr.length; i++){
 		for(var j = 0; j < arr[i].assignments.length; j++){
 			var val = courses[i].assignments[j].name;
-      			if(val == id){
+			if (val == id) {
 				console.log(val);
-        			arr[i].splice(j, 1);
-        			break;
-      			}
-    		}
-  	}
-  	return arr;
+				arr[i].splice(j, 1);
+				break;
+			}
+		}
+	}
+	return arr;
 }
-//
 function check(checked = true) {
-  	const checkboxes = document.querySelectorAll('input[name="assignment"]');
-  	checkboxes.forEach((checkbox) => {
-    		checkbox.checked = checked;
-  	});
+	const checkboxes = document.querySelectorAll('input[name="assignment"]');
+	checkboxes.forEach((checkbox) => {
+		checkbox.checked = checked;
+	});
 }
 
-const btn = document.querySelector('#selUnsel');
+const btn = document.querySelector("#selUnsel");
 btn.onclick = checkAll;
 
 function checkAll() {
