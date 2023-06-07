@@ -590,7 +590,7 @@ var expanded = false;
 function showCheckboxes() {
 	var checkboxes = document.getElementById("checkboxes");
 	if (!expanded) {
-		checkboxes.style.display = "block";
+		checkboxes.style.display = "flex";
 		expanded = true;
 	} else {
 		checkboxes.style.display = "none";

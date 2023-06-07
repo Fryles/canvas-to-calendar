@@ -6,7 +6,7 @@
 		<img src="/C2Cupdated.png" class="logo">
 		<h1 id="c2cHeading"> Welcome to C2C</h1>
 <div class="container">
-	<button id="scrapeBtn">Import Assignments To Tasks</button>
+	<button id="scrapeBtn">Export Assignments To Calendar</button>
 	<button id="uniqueBtn">Create Task</button>
 	<button id="asgnmBtn">Select Assignments</button><br>
 	<label id="floatingInputLabel">Canvas API Token:</label>
@@ -32,19 +32,9 @@
 	<button id="injectBtn">Send to my Calendar</button>
 </div>
 <div class ="dropdown invisible">
-	<div class="dropLeft">
 	<h2>Select Assignments to add to your Calendar!</h2>
 	<button id="selUnsel"> Select/Unselect All </button>
-	</div>
-	<div class = "dropRight">
-		<div class = "opts">
-			<select>
-				<option></option>
-    			</select>
-    			<div class = "overSelect"></div>
-  		</div>
-  		<div id = "checkboxes"></div>
-	</div>
+  <div id="checkboxes"></div>
 </div>
 		<script src="./main.js" type="module"></script>
 	</body>

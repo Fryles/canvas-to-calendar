@@ -96,52 +96,45 @@ input:not([type="checkbox"]):hover {
 
 .dropdown {
 	width: 100%;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	width: 100%;
-}
-.dropLeft .dropRight {
-	width: 45%;
-	display: flex;
-	flex-direction: column;
-	flex-basis: 100%;
-	flex: 1;
-}
-
-.opts {
-	position: relative;
-}
-
-.opts select {
-	width: 100%;
-	font-weight: bold;
-}
-
-.overSelect {
+	height: auto;
 }
 
 #checkboxes {
-	display: none;
-	border: 1px #dadada solid;
+	display: flex;
+	width: 90%;
+	border: 3px #6485c4 solid;
+	border-radius: 4px;
+	margin: 0 auto;
+	flex-direction: column;
+	align-content: center;
+	justify-content: flex-start;
+	align-items: center;
 }
 
 #checkboxes label {
 	display: inline-block;
-	width: 100%;
+	width: 95%;
+	padding: 0 3%;
 }
 
 #checkboxes label:hover {
-	background-color: #1e90ff;
+	background-color: #6485c4;
+}
+
+#selUnsel {
+	font-size: 1rem;
+	left: 30%;
+	position: relative;
+	margin-bottom: 0.3rem;
 }
 
 .checkInput {
 	vertical-align: middle;
 	float: right;
+	
 }
 
-
-.custom-date-input{
+.custom-date-input {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
