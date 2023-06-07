@@ -61,6 +61,7 @@ window.onload = function () {
 		const taskDate = document.querySelector("#dateInput");
 
 		await insertUniqueTask(taskName.value, taskDate.value);
+		showToast(taskName + " added to GCal!");
 	});
 
 	const tweakBtn = document.querySelector("#tweaksBtn");
@@ -273,7 +274,7 @@ function showDropdown() {
 			dropdown.classList.toggle("invisible");
 			heading.classList.remove("invisible");
 			const htmlElement = document.documentElement;
-			htmlElement.style.height = 'fit-content';
+			htmlElement.style.height = "fit-content";
 		});
 		dropdown.appendChild(closeBtn);
 	} else {
@@ -341,7 +342,7 @@ async function insertAllTask() {
 
 			// Check if the assignment is past due.
 			let currentTime = new Date(),
-			status = "needsAction";
+				status = "needsAction";
 			currentTime = currentTime.toISOString();
 			if (dueDate < currentTime) {
 				status = "completed";
@@ -363,8 +364,6 @@ async function insertAllTask() {
 			}
 		}
 	}
-
-	
 }
 
 // Checks to see if taskList already exist in the User's Task List.
@@ -451,7 +450,7 @@ async function createList(aList) {
 
 // Creates an API request to get all of User's current Task List.
 async function getAllTaskList() {
-	let token  =  await getAuthToken(); //wait for the token
+	let token = await getAuthToken(); //wait for the token
 	let init = {
 		method: "GET",
 		async: true,
@@ -461,7 +460,7 @@ async function getAllTaskList() {
 		},
 	};
 
-	let url = 'https://tasks.googleapis.com/tasks/v1/users/@me/lists';
+	let url = "https://tasks.googleapis.com/tasks/v1/users/@me/lists";
 	let response = await fetch(url, init);
 	let data = await response.json();
 
@@ -499,19 +498,18 @@ async function getAllTaskList() {
 
 // Creates an API request to create a new Task.
 async function createTask(aTask, listID) {
-
 	let token = await getAuthToken();
 	let init = {
-		method: 'POST',
+		method: "POST",
 		async: true,
 		headers: {
-			Authorization: 'Bearer ' + token,
-			'Content-Type': 'Canvas To Calendar Extension/createTask'
+			Authorization: "Bearer " + token,
+			"Content-Type": "Canvas To Calendar Extension/createTask",
 		},
-		body: JSON.stringify(aTask)
+		body: JSON.stringify(aTask),
 	};
 
-	let url = 'https://tasks.googleapis.com/tasks/v1/lists/' + listID + "/tasks"
+	let url = "https://tasks.googleapis.com/tasks/v1/lists/" + listID + "/tasks";
 
 	let response = await fetch(url, init);
 }
@@ -566,8 +564,10 @@ function getAuthorization() {
 	});
 }
 
-async function getAuthToken(){
-	return new Promise(resolve => chrome.identity.getAuthToken({'interactive' : true}, resolve));
+async function getAuthToken() {
+	return new Promise((resolve) =>
+		chrome.identity.getAuthToken({ interactive: true }, resolve)
+	);
 }
 
 function generateDropdown(arr) {
