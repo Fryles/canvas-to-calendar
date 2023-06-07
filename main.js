@@ -627,7 +627,7 @@ function getBlacklistAssignments(arr) {
 
 function deleteFromArray(arr, remove) {
 	//replace arr with assignments array in main.js
-	for (let id = 0; id < remove.length; i++) {
+	for (let id = 0; id < remove.length; id++) {
 		for (var course = 0; course < arr.length; course++) {
 			for (var assign = 0; assign < arr[course].assignments.length; assign++) {
 				var rem = arr[course].assignments[assign].name;

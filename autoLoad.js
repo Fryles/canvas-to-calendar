@@ -100,7 +100,7 @@ async function loadCourses() {
 			}
 			
 			for (let i = 0; i < data.length; i++) {
-				if (data[i].concluded == false) { //got rid of if course is a favorite condition
+				if (data[i].concluded == false && data[i].is_favorite == true) { //got rid of if course is a favorite condition
 					courses.push(data[i]);
 				}
 			}
