@@ -126,3 +126,9 @@ input:hover {
 #checkboxes label:hover {
   background-color: #1e90ff;
 }
+
+
+.custom-date-input::-webkit-calendar-picker-indicator {
+	font-family: Arial, Helvetica, sans-serif;
+	filter: invert(100%);
+}
