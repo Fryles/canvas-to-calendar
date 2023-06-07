@@ -347,7 +347,7 @@ async function insertAllTask() {
 
 			// Check if the assignment is past due.
 			let currentTime = new Date(),
-				status = "needsAction";
+			status = "needsAction";
 			currentTime = currentTime.toISOString();
 			if (dueDate < currentTime) {
 				status = "completed";
@@ -457,6 +457,24 @@ async function createList(aList) {
 
 // Creates an API request to get all of User's current Task List.
 async function getAllTaskList() {
+	let token  =  await getAuthToken(); //wait for the token
+	let init = {
+		method: "GET",
+		async: true,
+		headers: {
+			Authorization: "Bearer " + token,
+			"Content-Type": "Canvas To Calendar Extension/getAllTaskList",
+		},
+	};
+
+	let url = 'https://tasks.googleapis.com/tasks/v1/users/@me/lists';
+	let response = await fetch(url, init);
+	let data = await response.json();
+
+	allList = data.items;
+
+	allList.shift();
+
 	return new Promise((resolved) => {
 		// Get access token to setup intialization for API requestBody.
 		chrome.identity.getAuthToken({ interactive: true }, function (token) {
