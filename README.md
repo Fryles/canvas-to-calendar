@@ -21,7 +21,7 @@ Canvas to Calendar was developed for Intro to Software Engineering at UC Santa C
 
 
 ## Key Features
-* Automatically Updated Feed - Due dates are reoloaded everytime you load the Canvas webpage
+* Automatically Updated Feed - Due dates are reloaded everytime you load the Canvas webpage
   - No need to manually confirm and add all your assignments
 * Customizable Class Feed - See what you want, and nothing more
   - Easily pick what assignments, classes, and due dates should be added to your calendar
