@@ -70,17 +70,11 @@ window.onload = function () {
 		});
 	});
 
-	const genBtn = document.querySelector("#generateDropdown");
-	genBtn.addEventListener("click", async () => {
-		generateDropdown(courses);
-	});
-
 	const delBtn = document.querySelector("#delAssignments");
 	delBtn.addEventListener("click", async () => {
 		assignmentsToRemove = deleteAssignments(courses);
 		console.log(assignmentsToRemove);
-  	});
-
+	});
 
 	//redirect user to github repo
 	const aboutBtn = document.querySelector("#aboutBtn");
@@ -92,11 +86,11 @@ window.onload = function () {
 
 	// hide container and show unique menu in place
 	const eventBtn = document.querySelector("#uniqueBtn");
-	uniqueBtn.addEventListener("click", showUniqueEventMenu);
+	eventBtn.addEventListener("click", showUniqueEventMenu);
 
 	// hide container and show dropdown menu and etc in place
 	const dropdownBtn = document.querySelector("#asgnmBtn");
-	asgnmBtn.addEventListener("click", showDropdown);
+	dropdownBtn.addEventListener("click", showDropdown);
 }; //end window.onload
 
 // FUNCTIONS
@@ -246,6 +240,14 @@ function showDropdown() {
 		container.classList.contains("invisible") &&
 		footer.classList.contains("invisible")
 	) {
+		if (document.getElementById("checkboxes").innerHTML == "") {
+			(async () => {
+				//make sure we have courses and generate dropdown
+				courses = await getCourses();
+				console.log("BEFORE DROP:", courses);
+				generateDropdown(courses);
+			})();
+		}
 		dropdown.classList.remove("invisible"); // Show the dropdown element
 		var closeBtn = document.createElement("button");
 		closeBtn.id = "closeBtn";
@@ -315,7 +317,7 @@ function getHelp() {
 }
 
 async function getCourses() {
-	return await chrome.storage.local.get("courses").courses;
+	return (await chrome.storage.local.get("courses")).courses;
 }
 
 // Inserts all the Task List along with their corresponding Task.
@@ -568,7 +570,6 @@ function getAuthorization() {
 }
 
 function generateDropdown(arr) {
-	//replace arr with assignments array in main.js
 	for (var i = 0; i < arr.length; i++) {
 		for (var j = 0; j < arr[i].assignments.length; j++) {
 			var assign = arr[i].assignments[j].name;
@@ -603,12 +604,15 @@ function showCheckboxes() {
 	}
 }
 
-function deleteAssignments(arr){//replace arr with assignments array in main.js
-	var returnArr = []
-	let checkboxes = document.querySelectorAll('input[name="assignment"]:checked');
-    	checkboxes.forEach((checkbox) => {
-        	returnArr.push(checkbox.id);
-    	});
+function deleteAssignments(arr) {
+	//replace arr with assignments array in main.js
+	var returnArr = [];
+	let checkboxes = document.querySelectorAll(
+		'input[name="assignment"]:checked'
+	);
+	checkboxes.forEach((checkbox) => {
+		returnArr.push(checkbox.id);
+	});
 	return returnArr;
 }
 function deleteFromArray(arr, remove){//replace arr with assignments array in main.js
