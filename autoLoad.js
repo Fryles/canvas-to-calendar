@@ -1,5 +1,7 @@
 //Runs automatically on canvas page load
 console.log("autoLoad is... loaded");
+var baseAPI = window.location.href.split("/")[2]; //base url
+baseAPI = "https://" + baseAPI + "/api/v1/"; //base url for canvas api
 quickApply();
 //courses is global so it can be accessed by setGradesOnDash()
 var courses;
@@ -57,7 +59,7 @@ async function loadCourses() {
 		return false;
 	}
 
-	var user = await fetch("https://canvas.ucsc.edu/api/v1/users/self", {
+	var user = await fetch(baseAPI + "users/self", {
 		headers: {
 			//headers for authorization (token)
 			Accept: "application/json",
@@ -71,20 +73,16 @@ async function loadCourses() {
 		return false;
 	}
 
-	var enrollments = await fetch(
-		"https://canvas.ucsc.edu/api/v1/users/" + user.id + "/enrollments",
-		{
-			headers: {
-				//headers for authorization (token)
-				Accept: "application/json",
-				Authorization: "Bearer " + token,
-			},
-		}
-	).then((response) => response.json());
+	var enrollments = await fetch(baseAPI + "users/" + user.id + "/enrollments", {
+		headers: {
+			//headers for authorization (token)
+			Accept: "application/json",
+			Authorization: "Bearer " + token,
+		},
+	}).then((response) => response.json());
 
-	var base = "https://canvas.ucsc.edu/api/v1/"; //base url for canvas api
 	await fetch(
-		base + "courses" + "?per_page=100&include[]=concluded&include[]=favorites", //fetch all courses
+		baseAPI + "courses?per_page=100&include[]=concluded&include[]=favorites", //fetch all courses
 		{
 			headers: {
 				Accept: "application/json",
@@ -98,13 +96,14 @@ async function loadCourses() {
 				toast("Error loading courses. Probably a bad token...");
 				return false;
 			}
-			
+
 			for (let i = 0; i < data.length; i++) {
-				if (data[i].concluded == false && data[i].is_favorite == true) { //got rid of if course is a favorite condition
+				if (data[i].concluded == false && data[i].is_favorite == true) {
+					//got rid of if course is a favorite condition
 					courses.push(data[i]);
 				}
 			}
-			
+
 			//courses now contains all active courses
 			for (let i = 0; i < courses.length; i++) {
 				courses[i].assignments = [];
@@ -114,7 +113,7 @@ async function loadCourses() {
 						courses[i].grade = enrollments[j].grades.current_score;
 					}
 				}
-				await fetch(base + "courses/" + courses[i].id + "/assignments", {
+				await fetch(baseAPI + "courses/" + courses[i].id + "/assignments", {
 					headers: {
 						//headers for authorization (token)
 						Accept: "application/json",
@@ -220,14 +219,18 @@ function zenMode(on) {
 }
 
 async function darkMode(on) {
-	if (!on && document.getElementById("darkModeStylesheet")){
-		return document.head.removeChild(document.getElementById("darkModeStylesheet"));
+	if (!on && document.getElementById("darkModeStylesheet")) {
+		return document.head.removeChild(
+			document.getElementById("darkModeStylesheet")
+		);
 	}
 
-	if (!on) return
+	if (!on) return;
 
-	let response = await fetch("https://raw.githubusercontent.com/DeGrandis/canvas-dark-mode/master/plugin/css/styles.css");
-	let css  = await response.text();
+	let response = await fetch(
+		"https://raw.githubusercontent.com/DeGrandis/canvas-dark-mode/master/plugin/css/styles.css"
+	);
+	let css = await response.text();
 
 	const link = document.createElement("style");
 	link.innerHTML = css;

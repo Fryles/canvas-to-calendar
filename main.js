@@ -4,6 +4,7 @@
 var courses = [];
 var tabId;
 
+
 // Array of Task List, the current User's active courses.
 var allList = [];
 // Array of Task, all the assignments of each course.
